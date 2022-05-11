@@ -13,6 +13,7 @@ public class Group {
     private String groupDescription;
 
     private ArrayList<Group> groups = new ArrayList<>();
+    private ArrayList<Product> products = new ArrayList<>();
 
     private Group(String groupName,String groupDescription){
         this.groupName=groupName;
@@ -22,18 +23,34 @@ public class Group {
         groups.add(new Group(groupName,groupDescription));
     }
     public void editGroup(int index,String newGroupName, String newGroupDescription){
-        groups.set(index,new Group(newGroupName,newGroupDescription));
-
+        products = Product.getProducts();
+        String oldName = groups.get(index).getGroupName();
+        for(int i = 0; i<products.size(); i++){
+            if(products.get(i).getGroupNameInProduct().equals(oldName))
+                products.get(i).setGroupNameInProduct(newGroupName);
+        }
+        Product.setProducts(products);
+        groups.get(index).setGroupName(newGroupName);
+        groups.get(index).setGroupDescription(newGroupDescription);
     }
     public void deleteGroup(String groupName){
         for(Group group: groups){
             if(group.getGroupName().equals(groupName)){
                 groups.remove(group);
-                Product.remove(group);
+                remove(group.getGroupName());
             }
         }
     }
+    /**Use when you remove group to remove all products in this group*/
+    public void remove(String groupName){
+        products = Product.getProducts();
+        for(int i=0; i<products.size(); i++)
+            if(groupName.equals(products.get(i).getGroupNameInProduct()))
+                products.remove(i);
+        Product.setProducts(products);
+    }
     public ArrayList<Group> getGroups(){
+        sortByName();
         return groups;
     }
     private void sortByName(){

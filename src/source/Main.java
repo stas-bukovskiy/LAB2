@@ -112,6 +112,8 @@ public class Main extends JFrame {
 
         JTable table = getUneditableTable();
 
+//        table.getColumnModel().getColumn(1).setCellRenderer(render);
+
         table.getColumnModel().getColumn(1).setCellRenderer(render);
 
         table.getColumnModel().getColumn(0).setPreferredWidth((int) (0.6*WIDTH));
@@ -123,6 +125,8 @@ public class Main extends JFrame {
     }
 
     private JTable getUneditableTable() {
+        DefaultTableModel model = new DefaultTableModel();
+
         JTable table = new JTable(model) {
             public boolean editCellAt(int row, int column, java.util.EventObject e) {
                 return false;
@@ -130,6 +134,8 @@ public class Main extends JFrame {
         };
         DefaultTableCellRenderer render = new DefaultTableCellRenderer();
         render.setHorizontalAlignment(SwingConstants.CENTER);
+        return null;
+
     }
 
     private void initButtons() {

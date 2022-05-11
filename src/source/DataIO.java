@@ -96,7 +96,7 @@ public class DataIO {
     /**
      * !!!!!!!!!!!
      * Стааас тут main() нахуй не нужон , просто показую тобі як він работає
-     * !!!!!!!!!!
+     * !!!!!!!!!!!
      * */
     public static void main(String[] args){
         readGroups();

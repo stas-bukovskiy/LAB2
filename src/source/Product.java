@@ -1,5 +1,6 @@
 package source;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -15,7 +16,7 @@ public class Product {
     private int productQuantityOnStock;
     private double productPrice;
 
-    private ArrayList<Product> products = new ArrayList<>();
+    private static ArrayList<Product> products = new ArrayList<>();
 
     private Product(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice) {
         this.groupNameInProduct=groupNameInProduct;
@@ -28,7 +29,7 @@ public class Product {
     public void addProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
         products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
     }
-    public void editProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
+    public void editProduct( String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
         setGroupNameInProduct(groupNameInProduct);
         setProductName(productName);
         setProductDescription(productDescription);
@@ -40,13 +41,6 @@ public class Product {
         products.remove(index);
     }
 
-    /**Use when you remove group to remove all products in this group*/
-    public void remove(String groupName){
-        for(int i=0; i<products.size(); i++)
-            if(groupName.equals(products.get(i).getGroupNameInProduct()))
-                products.remove(i);
-    }
-
     /**toString() in Product.class*/
     public String toString(){
         return "#"+groupNameInProduct+
@@ -56,10 +50,32 @@ public class Product {
                 "\nНа складі: "+productQuantityOnStock+
                 "\nЦіна за штуку: "+productPrice;
     }
+    private static void sortByName(){
+        Product current;
+        Product previous;
+        for(int i=0; i<products.size(); i++){
+            for(int j=1;j< products.size() - i; j++){
+                current = products.get(j);
+                previous = products.get(j-1);
+                int res = previous.getProductName().compareTo(current.getProductName());
+                if(res > 0){
+                    Product temp = previous;
+                    products.set(j-1,current);
+                    products.set(j,previous);
+                }
+            }
+        }
+    }
 
     /**
      * getters and setter to fields
      * */
+    public static ArrayList<Product> getProducts(){
+        sortByName();
+        return products;
+    }
+    public static void setProducts(ArrayList<Product> newProducts){products = newProducts;}
+
     public String getGroupNameInProduct() {return groupNameInProduct;}
     public void setGroupNameInProduct(String groupNameInProduct) {this.groupNameInProduct = groupNameInProduct;}
 

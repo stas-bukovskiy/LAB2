@@ -84,7 +84,6 @@ public class Main extends JFrame {
                 return false;
             }
         };
-
         DefaultTableCellRenderer render = new DefaultTableCellRenderer();
         render.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -96,6 +95,41 @@ public class Main extends JFrame {
         table.setRowHeight(25);
         table.setFont(PLAIN_FONT_14);
         return table;
+    }
+
+    private JTable getProductsTable() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Name");
+        model.addColumn("Producer");
+        model.addColumn("Amount");
+        model.addColumn("Price");
+        model.addColumn("Overall Price");
+
+        model.addRow(new String[] {"Name1", "Producer1", "10", "22.00", "220.00"});
+        model.addRow(new String[] {"Name2", "Producer2", "10", "22.00", "220.00"});
+        model.addRow(new String[] {"Name3", "Producer3", "10", "22.00", "220.00"});
+        model.addRow(new String[] {"Name4", "Producer4", "10", "22.00", "220.00"});
+
+        JTable table = getUneditableTable();
+
+        table.getColumnModel().getColumn(1).setCellRenderer(render);
+
+        table.getColumnModel().getColumn(0).setPreferredWidth((int) (0.6*WIDTH));
+        table.getColumnModel().getColumn(0).setResizable(false);
+        table.getColumnModel().getColumn(1).setPreferredWidth((int) (0.2*WIDTH));
+        table.setRowHeight(25);
+        table.setFont(PLAIN_FONT_14);
+        return table;
+    }
+
+    private JTable getUneditableTable() {
+        JTable table = new JTable(model) {
+            public boolean editCellAt(int row, int column, java.util.EventObject e) {
+                return false;
+            }
+        };
+        DefaultTableCellRenderer render = new DefaultTableCellRenderer();
+        render.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void initButtons() {
@@ -135,7 +169,8 @@ public class Main extends JFrame {
 
     private void initListeners() {
         openButton.addActionListener(e -> {
-
+            OpenDialog openDialog = new OpenDialog(this, true);
+            openDialog.setVisible(true);
         });
         editButton.addActionListener(e -> {
 

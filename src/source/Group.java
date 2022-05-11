@@ -23,34 +23,18 @@ public class Group {
         groups.add(new Group(groupName,groupDescription));
     }
     public void editGroup(int index,String newGroupName, String newGroupDescription){
-        products = Product.getProducts();
-        String oldName = groups.get(index).getGroupName();
-        for(int i = 0; i<products.size(); i++){
-            if(products.get(i).getGroupNameInProduct().equals(oldName))
-                products.get(i).setGroupNameInProduct(newGroupName);
-        }
-        Product.setProducts(products);
-        groups.get(index).setGroupName(newGroupName);
-        groups.get(index).setGroupDescription(newGroupDescription);
+        groups.set(index,new Group(newGroupName,newGroupDescription));
+
     }
     public void deleteGroup(String groupName){
         for(Group group: groups){
             if(group.getGroupName().equals(groupName)){
                 groups.remove(group);
-                remove(group.getGroupName());
+//                Product.remo*ve(group);
             }
         }
     }
-    /**Use when you remove group to remove all products in this group*/
-    public void remove(String groupName){
-        products = Product.getProducts();
-        for(int i=0; i<products.size(); i++)
-            if(groupName.equals(products.get(i).getGroupNameInProduct()))
-                products.remove(i);
-        Product.setProducts(products);
-    }
     public ArrayList<Group> getGroups(){
-        sortByName();
         return groups;
     }
     private void sortByName(){

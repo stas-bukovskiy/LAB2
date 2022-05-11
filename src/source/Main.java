@@ -114,6 +114,8 @@ public class Main extends JFrame {
 
 //        table.getColumnModel().getColumn(1).setCellRenderer(render);
 
+        table.getColumnModel().getColumn(1).setCellRenderer(render);
+
         table.getColumnModel().getColumn(0).setPreferredWidth((int) (0.6*WIDTH));
         table.getColumnModel().getColumn(0).setResizable(false);
         table.getColumnModel().getColumn(1).setPreferredWidth((int) (0.2*WIDTH));
@@ -133,6 +135,7 @@ public class Main extends JFrame {
         DefaultTableCellRenderer render = new DefaultTableCellRenderer();
         render.setHorizontalAlignment(SwingConstants.CENTER);
         return null;
+
     }
 
     private void initButtons() {

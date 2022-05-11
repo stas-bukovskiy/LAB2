@@ -12,25 +12,24 @@ public class Main extends JFrame {
         frame.setVisible(true);
     }
 
-    private static final int WIDTH = 700;
-    private static final int HEIGHT = 600;
-    private static final int BUTTON_HEIGHT = 35;
+    public static final int WIDTH = 700;
+    public static final int HEIGHT = 600;
+    public static final int BUTTON_HEIGHT = 35;
+    public static final Font PLAIN_FONT_14 = new Font("Arial", Font.PLAIN, 14);
+    public static final Font PLAIN_FONT_16 = new Font("Arial", Font.PLAIN, 16);
 
     private JTable goodsTable;
-    private DefaultTableModel tableModel;
     private JButton addButton;
     private JButton openButton;
     private JButton editButton;
     private JButton deleteButton;
-    private JButton undoButton;
-    private JButton homeButton;
+    private JButton backButton;
     private List<JButton> buttons;
 
     public Main() {
-
-
         initFrame();
         initFrameContent();
+        initListeners();
     }
 
     private void initFrame() {
@@ -45,9 +44,7 @@ public class Main extends JFrame {
         Panel panel = new Panel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-//        tableModel = new DefaultTableModel();
-        goodsTable = new JTable();
-//        goodsTable.setModel(tableModel);
+        goodsTable = getGroupsTable();
         JScrollPane goodsScrolledTable = new JScrollPane(goodsTable);
 
 
@@ -55,37 +52,49 @@ public class Main extends JFrame {
         openButton = new JButton("Open");
         editButton = new JButton("Edit");
         deleteButton = new JButton("Delete");
-        undoButton = new JButton("Undo");
-        homeButton = new JButton("Home");
+        backButton = new JButton("Back");
         initButtons();
-        buttons.forEach(button -> button.setPreferredSize(new Dimension(-1 ,BUTTON_HEIGHT)));
+        buttons.forEach(button -> {
+            button.setPreferredSize(new Dimension(-1 ,BUTTON_HEIGHT));
+            button.setFont(PLAIN_FONT_14);
+        });
 
 
         add(panel, goodsScrolledTable, gbc, 0, 0, 3, 3, 1, 1);
         add(panel, openButton, gbc, 0, 3, 1, 1, 1, 1);
         add(panel, editButton, gbc, 1, 3, 1, 1, 1, 1);
         add(panel, addButton, gbc, 2, 3, 1, 1, 1, 1);
-        add(panel, undoButton, gbc, 0, 4, 1, 1, 1, 1);
-        add(panel, deleteButton, gbc, 1, 4, 1, 1, 1, 1);
-        add(panel, homeButton, gbc, 2, 4, 1, 1, 1, 1);
+        add(panel, deleteButton, gbc, 0, 4, 1, 1, 1, 1);
+        add(panel, backButton, gbc, 1, 4, 2, 1, 1, 1);
 
         getContentPane().add(panel);
     }
 
-    private JTable getGroupsTable(Group group) {
-        JTable table = new JTable();
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        TableColumnModel tableColumnModel = new DefaultTableColumnModel();
-        TableColumn nameColumn  = new TableColumn(0, (int) (0.6*WIDTH));
-        nameColumn.setHeaderValue("Name");
-        TableColumn amountColumn  = new TableColumn(1, (int) (0.2*WIDTH));
-        amountColumn.setHeaderValue("Amount");
-        tableColumnModel.addColumn(nameColumn);
-        tableColumnModel.addColumn(amountColumn);
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        for(Group subGroup: group.getGroups()) {
-            model.addRow(new Object[]{});
-        }
+    private JTable getGroupsTable() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Name");
+        model.addColumn("Amount");
+
+        model.addRow(new String[] {"Name1", "23"});
+        model.addRow(new String[] {"Name2", "23"});
+        model.addRow(new String[] {"Name3", "23"});
+
+        JTable table = new JTable(model) {
+            public boolean editCellAt(int row, int column, java.util.EventObject e) {
+                return false;
+            }
+        };
+
+        DefaultTableCellRenderer render = new DefaultTableCellRenderer();
+        render.setHorizontalAlignment(SwingConstants.CENTER);
+
+        table.getColumnModel().getColumn(1).setCellRenderer(render);
+
+        table.getColumnModel().getColumn(0).setPreferredWidth((int) (0.6*WIDTH));
+        table.getColumnModel().getColumn(0).setResizable(false);
+        table.getColumnModel().getColumn(1).setPreferredWidth((int) (0.2*WIDTH));
+        table.setRowHeight(25);
+        table.setFont(PLAIN_FONT_14);
         return table;
     }
 
@@ -95,8 +104,7 @@ public class Main extends JFrame {
         buttons.add(openButton);
         buttons.add(editButton);
         buttons.add(deleteButton);
-        buttons.add(undoButton);
-        buttons.add(homeButton);
+        buttons.add(backButton);
     }
 
     /**
@@ -111,7 +119,7 @@ public class Main extends JFrame {
      * @param wx        - specifies how to distribute extra horizontal space.
      * @param wy        - specifies how to distribute extra vertical space.
      */
-    public void add(Panel panel, Component component, GridBagConstraints gbc, int x, int y, int width, int height, double wx, double wy) {
+    public static void add(Panel panel, Component component, GridBagConstraints gbc, int x, int y, int width, int height, double wx, double wy) {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -124,7 +132,22 @@ public class Main extends JFrame {
         panel.add(component, gbc);
     }
 
-    private enum States {
-        MAIN_MENU
+
+    private void initListeners() {
+        openButton.addActionListener(e -> {
+
+        });
+        editButton.addActionListener(e -> {
+
+        });
+        addButton.addActionListener(e -> {
+
+        });
+        deleteButton.addActionListener(e -> {
+
+        });
+        backButton.addActionListener(e -> {
+
+        });
     }
 }

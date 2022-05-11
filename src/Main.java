@@ -1,8 +1,9 @@
 import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class Main extends JFrame {
     public static void main(String[] args) {
@@ -42,9 +43,7 @@ public class Main extends JFrame {
         Panel panel = new Panel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        String[] columnHeaders = new String[]{"Name", "Amount"};
-        String[][] contents = new String[][]{};
-        goodsTable = new JTable(contents, columnHeaders);
+        initTable();
 
 
         JScrollPane goodsScrolledTable = new JScrollPane(goodsTable);
@@ -69,6 +68,22 @@ public class Main extends JFrame {
         add(panel, homeButton, gbc, 2, 4, 1, 1, 1, 1);
 
         getContentPane().add(panel);
+    }
+
+    private void initTable() {
+        goodsTable = new JTable();
+        DefaultTableModel model = new DefaultTableModel();
+        goodsTable.setModel(model);
+
+        TableColumnModel tableColumnModel = new DefaultTableColumnModel();
+        TableColumn nameColumn  = new TableColumn(1, (int) (0.6*WIDTH));
+        nameColumn.setHeaderValue("Name");
+        TableColumn amountColumn  = new TableColumn(1, (int) (0.2*WIDTH));
+        amountColumn.setHeaderValue("Amount");
+        tableColumnModel.addColumn(nameColumn);
+        tableColumnModel.addColumn(amountColumn);
+        goodsTable.setColumnModel(tableColumnModel);
+
     }
 
     private void initButtons() {
@@ -104,5 +119,9 @@ public class Main extends JFrame {
         gbc.weightx = wx;
         gbc.weighty = wy;
         panel.add(component, gbc);
+    }
+
+    private enum States {
+        MAIN_MENU
     }
 }

@@ -2,7 +2,9 @@ package source;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OpenDialog extends JDialog {
@@ -16,6 +18,7 @@ public class OpenDialog extends JDialog {
 
     private JButton saveButton;
     private JButton cancelButton;
+    private List<JComponent> components;
 
     public OpenDialog(Frame owner, boolean modal, Group group) {
         super(owner, modal);
@@ -51,6 +54,21 @@ public class OpenDialog extends JDialog {
         producerField = new JTextField("product producer");
         saveButton = new JButton("Save");
         cancelButton = new JButton("Cancel");
+
+        components = new ArrayList<>();
+        components.addAll(labels.values());
+        components.add(groupComboBox);
+        components.add(saveButton);
+        components.add(cancelButton);
+        components.add(nameField);
+        components.add(amountField);
+        components.add(priceField);
+        components.add(producerField);
+        components.forEach(c -> {
+            c.setFont(Main.PLAIN_FONT_14);
+            if(c instanceof JButton) c.setPreferredSize(new Dimension(-1, Main.BUTTON_HEIGHT));
+            else c.setPreferredSize(new Dimension(-1, Main.LABEL_HEIGHT));
+        });
 
         Main.add(panel, labels.get("Group"), gbc, 0, 0, 1, 1, 0.1, 0.1);
         Main.add(panel, groupComboBox, gbc, 1, 0, 1, 1, 1, 1);
@@ -90,7 +108,7 @@ public class OpenDialog extends JDialog {
     private void initFrame() {
         setTitle("Edit Frame");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(getOwner().getX(), getOwner().getY(), (int) (0.8*Main.WIDTH), (int) (0.95*Main.HEIGHT));
+        setBounds(getOwner().getX(), getOwner().getY(), (int) (0.8*Main.WIDTH), (int) (Main.HEIGHT));
         setResizable(false);
     }
 }

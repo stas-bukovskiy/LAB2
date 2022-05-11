@@ -2,6 +2,7 @@ package source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Існує декілька груп товарів (наприклад: Продовольчі, непродовольчі...).
@@ -12,22 +13,37 @@ public class Group {
     private String groupName;
     private String groupDescription;
 
-    private ArrayList<Group> groups = new ArrayList<>();
+    private static ArrayList<Group> groups = new ArrayList<>();
     private ArrayList<Product> products = new ArrayList<>();
+    private static ArrayList<String> uniqueGroups = new ArrayList<>();
 
     private Group(String groupName,String groupDescription){
         this.groupName=groupName;
         this.groupDescription=groupDescription;
     }
-    public void addGroup(String groupName,String groupDescription){
-        groups.add(new Group(groupName,groupDescription));
+    public static void addGroup(String groupName, String groupDescription){
+        boolean contain = false;
+        for(String unique: uniqueGroups){
+            if(unique.equals(groupName)){
+                contain = true;
+                System.err.println("Try to add non unique group)");
+                break;
+            }
+        }
+        if(!contain){
+            groups.add(new Group(groupName,groupDescription));
+            uniqueGroups.add(groupName);
+        }
+
     }
     public void editGroup(int index,String newGroupName, String newGroupDescription){
         products = Product.getProducts();
         String oldName = groups.get(index).getGroupName();
         for(int i = 0; i<products.size(); i++){
-            if(products.get(i).getGroupNameInProduct().equals(oldName))
+            if(products.get(i).getGroupNameInProduct().equals(oldName)){
                 products.get(i).setGroupNameInProduct(newGroupName);
+                uniqueGroups.set(i,newGroupName);
+            }
         }
         Product.setProducts(products);
         groups.get(index).setGroupName(newGroupName);
@@ -49,18 +65,14 @@ public class Group {
                 products.remove(i);
         Product.setProducts(products);
     }
-    public ArrayList<Group> getGroups(){
-        sortByName();
-        return groups;
-    }
-    private void sortByName(){
+    private static void sortByName(){
         Group current;
         Group previous;
         for(int i=0; i<groups.size(); i++){
             for(int j=1;j< groups.size() - i; j++){
                 current = groups.get(j);
                 previous = groups.get(j-1);
-                int res = previous.getGroupName().compareTo(current.getGroupName());
+                int res = previous.getGroupName().toLowerCase().compareTo(current.getGroupName().toLowerCase());
                 if(res > 0){
                     Group temp = previous;
                     groups.set(j-1,current);
@@ -69,11 +81,24 @@ public class Group {
             }
         }
     }
+    public String toString(){
+        return "\nGroup: "+getGroupName()+
+                "\nInfo: "+getGroupDescription();
+    }
 
 
     /**
      * block of getter and setter for fields
      * */
+
+    public static ArrayList<Group> getGroups(){
+        sortByName();
+        return groups;
+    }
+    public void setGroups(ArrayList<Group> groups) {
+        this.groups = groups;
+    }
+
     public String getGroupName() {return groupName;}
     public void setGroupName(String groupName) {this.groupName = groupName;}
 

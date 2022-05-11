@@ -26,7 +26,7 @@ public class Product {
         this.productQuantityOnStock=productQuantityOnStock;
         this.productPrice=productPrice;
     }
-    public void addProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
+    public static void addProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
         products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
     }
     public void editProduct( String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
@@ -43,7 +43,7 @@ public class Product {
 
     /**toString() in Product.class*/
     public String toString(){
-        return "#"+groupNameInProduct+
+        return "\n#"+groupNameInProduct+
                 "\nНазва: "+productName+
                 "\nОпис: "+productDescription+
                 "\nВиробник: "+producer+
@@ -57,7 +57,7 @@ public class Product {
             for(int j=1;j< products.size() - i; j++){
                 current = products.get(j);
                 previous = products.get(j-1);
-                int res = previous.getProductName().compareTo(current.getProductName());
+                int res = previous.getProductName().toLowerCase().compareTo(current.getProductName().toLowerCase());
                 if(res > 0){
                     Product temp = previous;
                     products.set(j-1,current);

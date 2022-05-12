@@ -15,38 +15,43 @@ public class Group {
 
     private static ArrayList<Group> groups = new ArrayList<>();
     private ArrayList<Product> products = new ArrayList<>();
-    private static ArrayList<String> uniqueGroups = new ArrayList<>();
 
     private Group(String groupName,String groupDescription){
         this.groupName=groupName;
         this.groupDescription=groupDescription;
     }
     public static void addGroup(String groupName, String groupDescription){
-        boolean contain = false;
-        for(String unique: uniqueGroups){
-            if(unique.equals(groupName)){
-                contain = true;
+        boolean unique = true;
+        for(Group group: getGroups()){
+            if(group.getGroupName().equals(groupName)){
+                unique = false;
                 System.err.println("Try to add non unique group)");
                 break;
             }
         }
-        if(!contain){
+        if(unique)
             groups.add(new Group(groupName,groupDescription));
-            uniqueGroups.add(groupName);
-        }
-
     }
     public void editGroup(int index,String newGroupName, String newGroupDescription){
-        products = Product.getProducts();
-        String oldName = groups.get(index).getGroupName();
-        for(int i = 0; i<products.size(); i++){
-            if(products.get(i).getGroupNameInProduct().equals(oldName)){
-                products.get(i).setGroupNameInProduct(newGroupName);
-                uniqueGroups.set(i,newGroupName);
+        boolean unique = true;
+        for(Group group: getGroups()){
+            if(group.getGroupName().equals(newGroupName)){
+                unique = false;
+                System.err.println("Try to change group name for non unique");
+                break;
             }
         }
-        Product.setProducts(products);
-        groups.get(index).setGroupName(newGroupName);
+        if(unique){
+            products = Product.getProducts();
+            String oldName = groups.get(index).getGroupName();
+            for(int i = 0; i<products.size(); i++){
+                if(products.get(i).getGroupNameInProduct().equals(oldName)){
+                    products.get(i).setGroupNameInProduct(newGroupName);
+                }
+            }
+            Product.setProducts(products);
+            groups.get(index).setGroupName(newGroupName);
+        }
         groups.get(index).setGroupDescription(newGroupDescription);
     }
     public void deleteGroup(String groupName){

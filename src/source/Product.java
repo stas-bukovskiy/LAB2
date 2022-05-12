@@ -26,14 +26,32 @@ public class Product {
         this.productPrice=productPrice;
     }
     public static void addProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
-        products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
+        boolean unique = true;
+        for(Product product:products){
+            if(product.getProductName().equals(groupNameInProduct)){
+                unique = false;
+                System.err.println("Try to add non unique product");
+                break;
+            }
+        }
+        if(unique)
+            products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
     }
     public void editProduct( String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
+        boolean unique = true;
+        for(Product product: products){
+            if(product.getProductName().equals(groupNameInProduct)){
+                unique = false;
+                System.err.println("Try to change product name to non unique");
+                break;
+            }
+        }
         setGroupNameInProduct(groupNameInProduct);
-        setProductName(productName);
-        setProductDescription(productDescription);
-        setProducer(producer);
+        if(unique)
+            setProductName(productName);
         setProductQuantityOnStock(productQuantityOnStock);
+        setProducer(producer);
+        setProductDescription(productDescription);
         setProductPrice(productPrice);
     }
     public void delete(int index){

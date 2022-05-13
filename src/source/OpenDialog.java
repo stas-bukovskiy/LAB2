@@ -10,6 +10,7 @@ import java.util.Map;
 public class OpenDialog extends JDialog {
     private JComboBox<String> groupComboBox;
     private JTextField nameField;
+    private JScrollPane scrollPane;
     private JTextArea descriptionsTextArea;
     private JTextField amountField;
     private JTextField producerField;
@@ -26,6 +27,12 @@ public class OpenDialog extends JDialog {
         initFrameContent(group);
     }
 
+    public OpenDialog(Frame owner, boolean modal, int i) {
+        super(owner, modal);
+        initFrame();
+        initFrameContent(i);
+    }
+
     public OpenDialog(Frame owner, boolean modal) {
         super(owner, modal);
         initFrame();
@@ -35,40 +42,27 @@ public class OpenDialog extends JDialog {
     private void initFrameContent() {
         Panel panel = new Panel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        labels = new HashMap<>();
+
+        initBasicComponents();
+
         labels.put("Group", new JLabel("Group:", SwingConstants.CENTER));
-        labels.put("Name", new JLabel("Name:", SwingConstants.CENTER));
-        labels.put("Description", new JLabel("Description:", SwingConstants.CENTER));
         labels.put("Amount", new JLabel("Amount:", SwingConstants.CENTER));
         labels.put("Producer", new JLabel("Producer:", SwingConstants.CENTER));
         labels.put("Cost", new JLabel("Cost:", SwingConstants.CENTER));
 
         groupComboBox = new JComboBox<>(new String[] {"group 1", "group 3","group 2"});
         groupComboBox.setSelectedItem("group 3");
-        nameField = new JTextField("product name");
-        descriptionsTextArea = new JTextArea("product descriptions");
-        JScrollPane scrollPane = new JScrollPane(descriptionsTextArea);
-        scrollPane.setPreferredSize(new Dimension(-1, 200));
+
         amountField = new JTextField("5355");
         priceField = new JTextField("65");
         producerField = new JTextField("product producer");
-        saveButton = new JButton("Save");
-        cancelButton = new JButton("Cancel");
 
-        components = new ArrayList<>();
-        components.addAll(labels.values());
         components.add(groupComboBox);
-        components.add(saveButton);
-        components.add(cancelButton);
-        components.add(nameField);
         components.add(amountField);
         components.add(priceField);
         components.add(producerField);
-        components.forEach(c -> {
-            c.setFont(Main.PLAIN_FONT_14);
-            if(c instanceof JButton) c.setPreferredSize(new Dimension(-1, Main.BUTTON_HEIGHT));
-            else c.setPreferredSize(new Dimension(-1, Main.LABEL_HEIGHT));
-        });
+
+        setBasicComponentsProperty();
 
         Main.add(panel, labels.get("Group"), gbc, 0, 0, 1, 1, 0.1, 0.1);
         Main.add(panel, groupComboBox, gbc, 1, 0, 1, 1, 1, 1);
@@ -91,15 +85,67 @@ public class OpenDialog extends JDialog {
     private void initFrameContent(Group group) {
         Panel panel = new Panel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        nameField = new JTextField("group name");
-        descriptionsTextArea = new JTextArea("group descriptions");
+
+        initBasicComponents();
+        setBasicComponentsProperty();
+
+
+        Main.add(panel, labels.get("Name"), gbc, 0, 0, 1, 1, 1, 1);
+        Main.add(panel, nameField, gbc, 1, 0, 1, 1,1, 1);
+        Main.add(panel, labels.get("Description"), gbc, 0, 1, 2, 1,1, 1);
+        Main.add(panel, scrollPane, gbc, 0, 2, 2, 3, 1, 1);
+        Main.add(panel, saveButton, gbc, 0, 5, 1, 1, 1, 1);
+        Main.add(panel, cancelButton, gbc, 1, 5, 1, 1, 1, 1);
+
+        this.getContentPane().add(panel);
+    }
+
+    private void setBasicComponentsProperty() {
+        descriptionsTextArea.setFont(Main.PLAIN_FONT_14);
+        components.addAll(labels.values());
+        components.forEach(c -> {
+            c.setFont(Main.PLAIN_FONT_14);
+            if(c instanceof JButton) c.setPreferredSize(new Dimension(-1, Main.BUTTON_HEIGHT));
+            else if(c instanceof JLabel) c.setFont(Main.PLAIN_FONT_16);
+            else if (c instanceof JComboBox<?>)c.setPreferredSize(new Dimension(-1, Main.LABEL_HEIGHT));
+        });
+    }
+
+    private void initBasicComponents() {
+        labels = new HashMap<>();
+        labels.put("Name", new JLabel("Name:", SwingConstants.CENTER));
+        labels.put("Description", new JLabel("Description:", SwingConstants.CENTER));
+
+        nameField = new JTextField("product name");
+        descriptionsTextArea = new JTextArea("product descriptions");
+        scrollPane = new JScrollPane(descriptionsTextArea);
+        scrollPane.setPreferredSize(new Dimension(-1, 200));
+        labels.get("Description").setLabelFor(scrollPane);
+
         saveButton = new JButton("Save");
         cancelButton = new JButton("Cancel");
 
-        Main.add(panel, nameField, gbc, 0, 0, 1, 2, 1, 1);
-        Main.add(panel, new JScrollPane(descriptionsTextArea), gbc, 0, 1, 2, 2, 1, 1);
-        Main.add(panel,  saveButton, gbc, 0, 3, 1, 1, 1, 1);
-        Main.add(panel,  cancelButton, gbc, 1, 3, 1, 1, 1, 1);
+        components = new ArrayList<>();
+        components.add(saveButton);
+        components.add(cancelButton);
+        components.add(nameField);
+    }
+
+    private void initFrameContent(int i) {
+        Panel panel = new Panel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        initBasicComponents();
+        setBasicComponentsProperty();
+        scrollPane.setPreferredSize(new Dimension(-1, 350));
+
+
+        Main.add(panel, labels.get("Name"), gbc, 0, 0, 1, 1, 1, 1);
+        Main.add(panel, nameField, gbc, 1, 0, 1, 1,1, 1);
+        Main.add(panel, labels.get("Description"), gbc, 0, 1, 2, 1,1, 1);
+        Main.add(panel, scrollPane, gbc, 0, 2, 2, 3, 1, 3);
+        Main.add(panel, saveButton, gbc, 0, 5, 1, 1, 1, 1);
+        Main.add(panel, cancelButton, gbc, 1, 5, 1, 1, 1, 1);
 
         this.getContentPane().add(panel);
     }

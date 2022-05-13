@@ -26,14 +26,32 @@ public class Product {
         this.productPrice=productPrice;
     }
     public static void addProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
-        products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
+        boolean unique = true;
+        for(Product product:products){
+            if(product.getProductName().equals(productName)){
+                unique = false;
+                System.err.println("Try to add non unique product");
+                break;
+            }
+        }
+        if(unique)
+            products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
     }
     public void editProduct( String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
+        boolean unique = true;
+        for(Product product: products){
+            if(product.getProductName().equals(groupNameInProduct)){
+                unique = false;
+                System.err.println("Try to change product name to non unique");
+                break;
+            }
+        }
         setGroupNameInProduct(groupNameInProduct);
-        setProductName(productName);
-        setProductDescription(productDescription);
-        setProducer(producer);
+        if(unique)
+            setProductName(productName);
         setProductQuantityOnStock(productQuantityOnStock);
+        setProducer(producer);
+        setProductDescription(productDescription);
         setProductPrice(productPrice);
     }
     public void delete(int index){
@@ -47,8 +65,53 @@ public class Product {
                 "\nОпис: "+productDescription+
                 "\nВиробник: "+producer+
                 "\nНа складі: "+productQuantityOnStock+
-                "\nЦіна за штуку: "+productPrice;
+                "\nЦіна за штуку: "+productPrice+
+                "\nЗагальна вартість: "+totalProductCost();
     }
+    /**
+     * Method to add product on stock(change quantity)
+     * */
+    public void addToStock(String productNameToAdd,int quantity){
+        for(int i=0;i<getProducts().size();i++){
+            if(productNameToAdd.equals(products.get(i).getProductName())){
+                products.get(i).setProductQuantityOnStock(getProductQuantityOnStock()+quantity);
+                break;
+            }
+        }
+    }
+    /**
+     * Method to get product from stock(change quantity)
+     * */
+    public void writeOffFromStock(String productNameToWriteOff, int quantity){
+        for(int i=0;i<getProducts().size();i++){
+            if(productNameToWriteOff.equals(products.get(i).getProductName())){
+                if(products.get(i).getProductQuantityOnStock() >= quantity)
+                    products.get(i).setProductQuantityOnStock(getProductQuantityOnStock()+quantity);
+                else
+                    System.err.println("Try to write off "+quantity+" product(On stock:"+products.get(i).getProductQuantityOnStock()+")");
+                break;
+            }
+        }
+    }
+
+    /**
+     * For count total product cost(one specific product)
+     * */
+    public double totalProductCost(){
+        return getProductQuantityOnStock()*getProductPrice();
+    }
+
+    /**
+     * For count total product value on stock(All products value)
+     * */
+    public double valueOfProductsOnStock(){
+        double total = 0.0;
+        for(Product product: getProducts()){
+            total += product.getProductPrice()*product.getProductQuantityOnStock();
+        }
+        return total;
+    }
+
     private static void sortByName(){
         Product current;
         Product previous;

@@ -9,8 +9,12 @@ public class DataIO {
     private static File productList = new File("src/resources/productList.txt");
 
     /**
-     * Method that read groups and info from file
+     * Method that read groups and info from file(use when program begin)
      * */
+    public static void readInfoFromFile(){
+        readGroups();
+        readProducts();
+    }
     public static void readGroups(){
         try{
             Scanner scanner = new Scanner(groupList);
@@ -29,8 +33,8 @@ public class DataIO {
             while(scanner.hasNext()){
                 String[] productInfo = scanner.nextLine().split("[#%]");
                 try{
-                    Product.addProduct(chooseGroup(Group.getGroups()), productInfo[1], productInfo[2], productInfo[3],
-                            Integer.parseInt(productInfo[4]), Double.parseDouble(productInfo[5]));
+                    Product.addProduct(productInfo[1], productInfo[2], productInfo[3], productInfo[4],
+                            Integer.parseInt(productInfo[5]), Double.parseDouble(productInfo[6]));
                 } catch(IllegalArgumentException e){
                     System.err.println("Wrong type when add product)");
                     e.printStackTrace();
@@ -40,15 +44,14 @@ public class DataIO {
             System.err.println("IO failed");
         }
     }
-    /**
-     * !!!!!!!!!!!!!!!!!!!!
-     * стасссссс сюда треба впихнути картінку, типу щоб чел вибрав з списку в яку групу добаавить товар
-     * !!!!!!!!!!!!!!!!!!!!
-     * */
-    public static String chooseGroup(ArrayList<Group> groups){
-        return groups.get(0).getGroupName();
-    }
 
+    /**
+     * Use at the end of program to write info to file
+     * */
+    public static void writeInfoToFile(){
+        writeGroups();
+        writeProducts();
+    }
     public static void writeGroups(){
         try{
             StringBuilder result;
@@ -106,7 +109,7 @@ public class DataIO {
 
         readProducts();
         System.out.println(Product.getProducts());
-        Product.addProduct(chooseGroup(Group.getGroups()),"Ряжанка","Смачна","Простоквашино",5,40);
+        Product.addProduct(Group.getGroups().get(0).getGroupName(),"Ряжанка","Смачна","Простоквашино",5,40);
         System.out.println(Product.getProducts());
 
         writeGroups();

@@ -197,18 +197,25 @@ public class Main extends JFrame {
         });
         editButton.addActionListener(e -> {
             int index = getSelectedRow();
-            if(index == -1) {
+            if(index != -1) {
                 if (current == State.GROUPS) {
-//                OpenDialog openDialog = new OpenDialog(this, true, getGroups().get(goodsTable.getSelectedRow()));
-//                openDialog.setVisible(true);
+                    OpenDialog openDialog = new OpenDialog(this, true, 1);
+                    openDialog.setVisible(true);
                 } else {
-//                openDialog = new OpenDialog(this, true, getProducts().get(goodsTable.getSelectedRow()));
-//                openDialog.setVisible(true);
+                    OpenDialog openDialog = new OpenDialog(this, true);
+                    openDialog.setVisible(true);
                 }
             }
         });
         addButton.addActionListener(e -> {
-
+            if (current == State.GROUPS) {
+                setProductsTableProperties();
+                current = State.PRODUCTS;
+            } else {
+                int selectedProductIndex = goodsTable.getSelectedRow();
+                OpenDialog openDialog = new OpenDialog(this, true);
+                openDialog.setVisible(true);
+            }
         });
         deleteButton.addActionListener(e -> {
             int item = getSelectedRow();
@@ -225,6 +232,14 @@ public class Main extends JFrame {
             }
         });
     }
+
+    private void changePanel(JPanel panel) {
+        getContentPane().removeAll();
+        getContentPane().add(panel, BorderLayout.CENTER);
+        getContentPane().doLayout();
+        update(getGraphics());
+    }
+
 
     private int getSelectedRow() {
         int index = goodsTable.getSelectedRow();

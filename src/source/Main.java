@@ -233,6 +233,14 @@ public class Main extends JFrame {
         });
     }
 
+    private void changePanel(JPanel panel) {
+        getContentPane().removeAll();
+        getContentPane().add(panel, BorderLayout.CENTER);
+        getContentPane().doLayout();
+        update(getGraphics());
+    }
+
+
     private int getSelectedRow() {
         int index = goodsTable.getSelectedRow();
         if(index == -1) {

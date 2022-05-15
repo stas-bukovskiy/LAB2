@@ -14,7 +14,7 @@ public class Group {
     private String groupDescription;
 
     private static ArrayList<Group> groups = new ArrayList<>();
-    private ArrayList<Product> products = new ArrayList<>();
+    private static ArrayList<Product> products = new ArrayList<>();
 
     private Group(String groupName,String groupDescription){
         this.groupName=groupName;
@@ -31,7 +31,7 @@ public class Group {
         if(unique)
             groups.add(new Group(groupName,groupDescription));
     }
-    public void editGroup(int index,String newGroupName, String newGroupDescription){
+    public static void editGroup(int index, String newGroupName, String newGroupDescription){
         boolean unique = true;
         for(Group group: getGroups()){
             if(group.getGroupName().equals(newGroupName)){
@@ -52,16 +52,11 @@ public class Group {
         }
         groups.get(index).setGroupDescription(newGroupDescription);
     }
-    public void deleteGroup(String groupName){
-        for(Group group: groups){
-            if(group.getGroupName().equals(groupName)){
-                groups.remove(group);
-                remove(group.getGroupName());
-            }
-        }
+    public static void deleteGroup(String groupName){
+        groups.removeIf(group -> group.getGroupName().equalsIgnoreCase(groupName));
     }
     /**Use when you remove group to remove all products in this group*/
-    public void remove(String groupName){
+    public static void remove(String groupName){
         products = Product.getProducts();
         for(int i=0; i<products.size(); i++)
             if(groupName.equals(products.get(i).getGroupNameInProduct()))

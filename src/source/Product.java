@@ -38,7 +38,7 @@ public class Product {
         else
             throw new RuntimeException("Try to add product with (lower than 0 price or negative quantity)");
     }
-    public void editProduct( String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
+    public void editProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
         boolean uniqueName = true;
         boolean groupExist = false;
         for(Product product: products){
@@ -71,7 +71,7 @@ public class Product {
             throw new RuntimeException("Try to set incorrect price");
 
     }
-    public void delete(int index){
+    public static void delete(int index){
         products.remove(index);
     }
 

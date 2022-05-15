@@ -22,8 +22,7 @@ public class DataIO {
                 Group.addGroup(groupInfo[1],groupInfo[2]);
             }
         } catch(IOException e){
-            System.err.println("IO failed");
-            e.printStackTrace();
+            throw new RuntimeException("IO failed");
         }
     }
     public static void readProducts(){
@@ -35,12 +34,11 @@ public class DataIO {
                     Product.addProduct(productInfo[1], productInfo[2], productInfo[3], productInfo[4],
                             Integer.parseInt(productInfo[5]), Double.parseDouble(productInfo[6]));
                 } catch(IllegalArgumentException e){
-                    System.err.println("Wrong type when add product)");
-                    e.printStackTrace();
+                        throw new RuntimeException("Wrong type when add product)");
                 }
             }
         } catch(IOException e){
-            System.err.println("IO failed");
+            throw new RuntimeException("IO failed");
         }
     }
 
@@ -65,8 +63,7 @@ public class DataIO {
             }
             bw.close();
         }catch(IOException e){
-            System.err.println("File writing failed");
-            e.printStackTrace();
+            throw new RuntimeException("File writing failed");
         }
     }
     public static void writeProducts(){
@@ -91,8 +88,7 @@ public class DataIO {
             }
             bw.close();
         }catch(IOException e){
-            System.err.println("File writing failed");
-            e.printStackTrace();
+            throw new RuntimeException("File writing failed");
         }
     }
 }

@@ -20,6 +20,8 @@ public class ActionWithData {
             if(group.getGroupDescription().contains(whatToFind))
                 result.add(group);
         }
+        if(result.isEmpty())
+            throw new RuntimeException("Matches not found");
         return result;
     }
     public static ArrayList<Product> findProduct(String whatToFind){
@@ -38,6 +40,8 @@ public class ActionWithData {
                 continue;
             }
         }
+        if(result.isEmpty())
+            throw new RuntimeException("Matches not found");
         return result;
     }
 }

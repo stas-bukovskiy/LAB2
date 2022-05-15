@@ -25,8 +25,7 @@ public class Group {
         for(Group group: getGroups()){
             if(group.getGroupName().equals(groupName)){
                 unique = false;
-                System.err.println("Try to add non unique group)");
-                break;
+                throw new RuntimeException("Try to add non unique group)");
             }
         }
         if(unique)
@@ -37,8 +36,7 @@ public class Group {
         for(Group group: getGroups()){
             if(group.getGroupName().equals(newGroupName)){
                 unique = false;
-                System.err.println("Try to change group name for non unique");
-                break;
+                throw new RuntimeException("Try to change group name for non unique");
             }
         }
         if(unique){

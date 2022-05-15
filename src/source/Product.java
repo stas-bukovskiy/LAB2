@@ -30,14 +30,13 @@ public class Product {
         for(Product product:products){
             if(product.getProductName().equals(productName)){
                 unique = false;
-                System.err.println("Try to add non unique product");
-                break;
+                throw new RuntimeException("Try to add non unique product");
             }
         }
         if(unique && productPrice>0 && productQuantityOnStock>=0)
             products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
         else
-            System.err.println("Try to add product with (lower than 0 price or negative quantity)");
+            throw new RuntimeException("Try to add product with (lower than 0 price or negative quantity)");
     }
     public void editProduct( String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
         boolean uniqueName = true;
@@ -45,8 +44,7 @@ public class Product {
         for(Product product: products){
             if(product.getProductName().equals(productName)){
                 uniqueName = false;
-                System.err.println("Try to change product name to non unique");
-                break;
+                throw new RuntimeException("Try to change product name to non unique");
             }
         }
         if(uniqueName)
@@ -60,17 +58,17 @@ public class Product {
         if(groupExist)
             setGroupNameInProduct(groupNameInProduct);
         else
-            System.err.println("Try to change to non existing group");
+            throw new RuntimeException("Try to change to non existing group");
         if(productQuantityOnStock>0)
             setProductQuantityOnStock(productQuantityOnStock);
         else
-            System.err.println("Try to set incorrect quantity to product");
+            throw new RuntimeException("Try to set incorrect quantity to product");
         setProducer(producer);
         setProductDescription(productDescription);
         if(productPrice>0)
             setProductPrice(productPrice);
         else
-            System.err.println("Try to set incorrect price");
+            throw new RuntimeException("Try to set incorrect price");
 
     }
     public void delete(int index){
@@ -107,7 +105,7 @@ public class Product {
                 if(products.get(i).getProductQuantityOnStock() >= quantity)
                     products.get(i).setProductQuantityOnStock(getProductQuantityOnStock()+quantity);
                 else
-                    System.err.println("Try to write off "+quantity+" product(On stock:"+products.get(i).getProductQuantityOnStock()+")");
+                    throw new RuntimeException("Try to write off "+quantity+" product(On stock:"+products.get(i).getProductQuantityOnStock()+")");
                 break;
             }
         }

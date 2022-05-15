@@ -67,7 +67,7 @@ public class MainFrame extends JFrame {
 
 
 
-    public MainFrame(){
+    public  MainFrame(){
         initFrame();
         initComponents();
         DataIO.readInfoFromFile();
@@ -108,7 +108,7 @@ public class MainFrame extends JFrame {
         searchProperty.add(productRadioButton);
 
         for(JComponent component: new JComponent[]{nameField, amountField, producerField, priceField, searchField}){
-            component.setFont(Main.PLAIN_FONT_14);
+            component.setFont(PLAIN_FONT_14);
             component.setPreferredSize(new Dimension(-1, LABEL_HEIGHT));
         }
 
@@ -253,7 +253,7 @@ public class MainFrame extends JFrame {
 
     private void fillOpenAndEditProductPanel(int index) {
         Product product = Product.getProducts().get(index);
-        groupComboBox.setSelectedIndex(index);
+        groupComboBox.setSelectedIndex(previousGroupIndex);
         nameField.setText(product.getProductName());
         descriptionsTextArea.setText(product.getProductDescription());
         amountField.setText(String.valueOf(product.getProductQuantityOnStock()));

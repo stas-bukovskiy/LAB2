@@ -71,8 +71,8 @@ public class Product {
             throw new RuntimeException("Try to set incorrect price");
 
     }
-    public static void delete(int index){
-        products.remove(index);
+    public static void delete(String name){
+        products.removeIf(p -> p.getProductName().equalsIgnoreCase(name));
     }
 
     /**toString() in Product.class*/
@@ -103,7 +103,7 @@ public class Product {
         for(int i=0;i<getProducts().size();i++){
             if(productNameToWriteOff.equals(products.get(i).getProductName())){
                 if(products.get(i).getProductQuantityOnStock() >= quantity)
-                    products.get(i).setProductQuantityOnStock(getProductQuantityOnStock()+quantity);
+                    products.get(i).setProductQuantityOnStock(getProductQuantityOnStock()-quantity);
                 else
                     throw new RuntimeException("Try to write off "+quantity+" product(On stock:"+products.get(i).getProductQuantityOnStock()+")");
                 break;
@@ -121,7 +121,7 @@ public class Product {
     /**
      * For count total product value on stock(All products value)
      * */
-    public double valueOfProductsOnStock(){
+    public static double valueOfProductsOnStock(){
         double total = 0.0;
         for(Product product: getProducts()){
             total += product.getProductPrice()*product.getProductQuantityOnStock();

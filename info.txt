@@ -1,0 +1,128 @@
+The amount of products groups: 5
+The amount of products: 11
+The overall price: 2151.4
+
+
+1) алкоголь:
+    - Descriptions: опис алкашки
+    - The amount of products: 11
+    - The overall price: 351.0
+    - Products:
+      1) горох:
+        - Name: горох
+        - Descriptions: хз
+        - Producer:  
+        - The amount: 1
+        - The price per one: 1.0
+        - The overall price: 1.0
+
+      2) гречка:
+        - Name: гречка
+        - Descriptions: вкусна
+        - Producer: якийсь виробник
+        - The amount: 10
+        - The price per one: 35.0
+        - The overall price: 350.0
+
+
+
+2) побутова хімія:
+    - Descriptions: опис побутової хімії
+    - The amount of products: 10
+    - The overall price: 400.0
+    - Products:
+      1) їжа1:
+        - Name: їжа1
+        - Descriptions: нічого 1
+        - Producer: виробник 1
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+      2) їжа2:
+        - Name: їжа2
+        - Descriptions: нічого 2
+        - Producer: виробник 2
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+
+
+3) продовольчі товари:
+    - Descriptions: опис продовольчих товарів
+    - The amount of products: 15
+    - The overall price: 600.0
+    - Products:
+      1) їжа5:
+        - Name: їжа5
+        - Descriptions: нічого 5
+        - Producer: виробник 5
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+      2) їжа4:
+        - Name: їжа4
+        - Descriptions: нічого 4
+        - Producer: виробник 4
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+      3) їжа3:
+        - Name: їжа3
+        - Descriptions: нічого 3
+        - Producer: виробник 3
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+
+
+4) трава:
+    - Descriptions: опис трави
+    - The amount of products: 10
+    - The overall price: 400.0
+    - Products:
+      1) їжа6:
+        - Name: їжа6
+        - Descriptions: нічого 6
+        - Producer: виробник 6
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+      2) Ряжанка:
+        - Name: Ряжанка
+        - Descriptions: Смачна
+        - Producer: Простоквашино
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+
+
+5) цигарки:
+    - Descriptions: опис цигарок
+    - The amount of products: 10
+    - The overall price: 400.4
+    - Products:
+      1) цигарки 2:
+        - Name: цигарки 2
+        - Descriptions: нічого 7
+        - Producer: виробник 7
+        - The amount: 5
+        - The price per one: 40.0
+        - The overall price: 200.0
+
+      2) цигарки 1:
+        - Name: цигарки 1
+        - Descriptions: нічого 8
+        - Producer: виробник 8
+        - The amount: 5
+        - The price per one: 40.08
+        - The overall price: 200.39999999999998
+
+
+

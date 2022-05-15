@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,12 +62,14 @@ public class MainFrame extends JFrame {
 
     private State current;
     private State previous;
+    private int previousProductIndex;
 
 
 
     public MainFrame(){
         initFrame();
         initComponents();
+        DataIO.readInfoFromFile();
         getContentPane().add(getGroupsPanel());
         initListeners();
         current = State.GROUPS;
@@ -115,8 +116,9 @@ public class MainFrame extends JFrame {
 
     private JPanel getOpenAndEditGroupPanel() {
         JPanel res = new JPanel(new GridBagLayout());
-
         res.setBorder(new EmptyBorder(50, 50, 50, 50));
+        nameField.setText("");
+        descriptionsTextArea.setText("");
         JScrollPane scrolledDescriptionsTextArea = new JScrollPane(descriptionsTextArea);
         scrolledDescriptionsTextArea.setPreferredSize(new Dimension(-1, 200));
         add(res, labels.get("Name"), gbc, 0, 0, 1, 1, 1, 1, BIG_INSERTS);
@@ -145,9 +147,8 @@ public class MainFrame extends JFrame {
 
     private JPanel getGroupsPanel() {
         JPanel res = new JPanel(new GridBagLayout());
-        DefaultTableModel model = (DefaultTableModel) groupsTable.getModel();
-        model.addRow(new String[] {"Name1", "23"});
-        groupsTable.setModel(model);
+
+        fillGroupTable();
 
         JScrollPane scrolledGroupsTable = new JScrollPane(groupsTable);
         scrolledGroupsTable.setPreferredSize(new Dimension(-1, 360));
@@ -163,9 +164,34 @@ public class MainFrame extends JFrame {
         return res;
     }
 
+    private void fillGroupTable() {
+        DefaultTableModel model = (DefaultTableModel) groupsTable.getModel();
+        model.setRowCount(0);
+        for (Group group: Group.getGroups()) {
+            model.addRow(new String[] {group.getGroupName()});
+        }
+        groupsTable.setModel(model);
+    }
+
+    private void fillProductTable(String group) {
+        DefaultTableModel model = (DefaultTableModel) productsTable.getModel();
+        for (Product product: ActionWithData.findProduct(group)) {
+            if(product.getGroupNameInProduct().equals(group))
+                model.addRow(new String[] {product.getProductName(), product.getProducer(),
+                        String.valueOf(product.getProductQuantityOnStock()), String.valueOf(product.getProductPrice()),
+                        String.valueOf(product.getProductPrice() * product.getProductQuantityOnStock())});
+        }
+        productsTable.setModel(model);
+    }
+
     private JPanel getOpenAndEditProductPanel() {
         JPanel res  = new JPanel(new GridBagLayout());
-
+        nameField.setText("");
+        descriptionsTextArea.setText("");
+        amountField.setText("");
+        priceField.setText("");
+        producerField.setText("");
+        for (Group group :Group.getGroups()) groupComboBox.addItem(group.getGroupName());
         res.setBorder(new EmptyBorder(0, 50, 0, 50));
         JScrollPane scrolledDescriptionsTextArea = new JScrollPane(descriptionsTextArea);
         scrolledDescriptionsTextArea.setPreferredSize(new Dimension(-1, 200));
@@ -197,12 +223,10 @@ public class MainFrame extends JFrame {
         return res;
     }
 
-    private JPanel getProductsPanel() {
+    private JPanel getProductsPanel(int groupIndex) {
         JPanel res = new JPanel(new GridBagLayout());
 
-        DefaultTableModel model = (DefaultTableModel) productsTable.getModel();
-        model.addRow(new String[] {"Name1", "Producer1", "10", "22.00", "220.00"});
-        productsTable.setModel(model);
+       fillProductTable(Group.getGroups().get(groupIndex).getGroupName());
 
         JScrollPane scrolledGroupsTable = new JScrollPane(productsTable);
         scrolledGroupsTable.setPreferredSize(new Dimension(-1, 380));
@@ -227,13 +251,11 @@ public class MainFrame extends JFrame {
         DefaultTableModel model = new DefaultTableModel();
 
         model.addColumn("Name");
-        model.addColumn("Amount");
         groupsTable = new JTable(model) {
             public boolean editCellAt(int row, int column, java.util.EventObject e) {
                 return false;
             }
         };
-        groupsTable.getColumnModel().getColumn(1).setCellRenderer(centralRenderer);
         groupsTable.getColumnModel().getColumn(0).setPreferredWidth((int) (0.6*WIDTH));
         groupsTable.getColumnModel().getColumn(0).setResizable(false);
 
@@ -291,14 +313,16 @@ public class MainFrame extends JFrame {
         openButton.addActionListener(e -> {
             int index = getSelectedRow();
             if(index != -1) {
-                changePanel(getProductsPanel());
+                changePanel(getProductsPanel(index));
                 changeState(State.PRODUCTS);
             }
+            previousProductIndex = index;
         });
         deleteButton.addActionListener(e -> {
             int index = getSelectedRow();
-            if(index != -1 && isConfirmation("Do you really want to delete " + index + "?")) {
-
+            if(index != -1 && isConfirmation("Do you really want to delete " + Group.getGroups().get(index).getGroupName() + "?")) {
+                //Group.deleteGroup(Group.getGroups().get(index).getGroupName());
+                fillGroupTable();
             }
         });
         addButton.addActionListener(e -> {
@@ -318,7 +342,7 @@ public class MainFrame extends JFrame {
         cancelButton.addActionListener(e -> {
             if(current != State.GROUPS && current != State.PRODUCTS) {
                 if(previous == State.GROUPS) changePanel(getGroupsPanel());
-                else if (previous == State.PRODUCTS) changePanel(getProductsPanel());
+                else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousProductIndex));
                 changeState(previous);
             }
         });
@@ -347,7 +371,11 @@ public class MainFrame extends JFrame {
             if(current == State.OPENING_AND_EDITING) {
 
             } else if (current == State.ADDING) {
-
+                if(previous == State.GROUPS) {
+                    Group.addGroup(nameField.getText(), descriptionsTextArea.getText());
+                } else if (previous == State.PRODUCTS) {
+//                    Product.addProduct();
+                }
             } else if (current == State.ALL_INFO) {
                 JFileChooser fileChooser = getFileChooser();
                 if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -356,7 +384,7 @@ public class MainFrame extends JFrame {
                 }
             }
             if(previous == State.GROUPS) changePanel(getGroupsPanel());
-            else if (previous == State.PRODUCTS) changePanel(getProductsPanel());
+            else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousProductIndex));
             changeState(previous);
         });
         writeOffButton.addActionListener(e -> {
@@ -403,12 +431,6 @@ public class MainFrame extends JFrame {
         setBounds(100, 100, WIDTH, HEIGHT);
         setMaximumSize(new Dimension((int) (1.1*WIDTH), (int) (1.1*HEIGHT)));
         setMinimumSize(new Dimension((int) (0.9*WIDTH), HEIGHT));
-    }
-
-    private void clearTable(JTable table) {
-        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
-        tableModel.setRowCount(0);
-        tableModel.setColumnCount(0);
     }
 
     public static void add(JPanel panel, Component component, GridBagConstraints gbc, int x, int y, int width, int height, double wx, double wy, int insert) {
@@ -489,7 +511,6 @@ public class MainFrame extends JFrame {
     }
 
     private enum State {
-        GROUPS,
-        SEARCH, SEARCHING, OPENING_AND_EDITING, ADDING, ALL_INFO, PRODUCTS
+        GROUPS, SEARCH, SEARCHING, OPENING_AND_EDITING, ADDING, ALL_INFO, PRODUCTS
     }
 }

@@ -1,12 +1,11 @@
 package source;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class DataIO {
-    private static File groupList = new File("src/resources/groupList.txt");
-    private static File productList = new File("src/resources/productList.txt");
+    private final static File groupList = new File("src/resources/groupList.txt");
+    private final static File productList = new File("src/resources/productList.txt");
 
     /**
      * Method that read groups and info from file(use when program begin)
@@ -93,26 +92,5 @@ public class DataIO {
             System.err.println("File writing failed");
             e.printStackTrace();
         }
-    }
-
-
-    /**
-     * !!!!!!!!!!!
-     * Стааас тут main() нахуй не нужон , просто показую тобі як він работає
-     * !!!!!!!!!!!
-     * */
-    public static void main(String[] args){
-        readGroups();
-        System.out.println(Group.getGroups());
-        Group.addGroup("Додана фігня","Опис доданої фігні");
-        System.out.println(Group.getGroups());
-
-        readProducts();
-        System.out.println(Product.getProducts());
-        Product.addProduct(Group.getGroups().get(0).getGroupName(),"Ряжанка","Смачна","Простоквашино",5,40);
-        System.out.println(Product.getProducts());
-
-        writeGroups();
-        writeProducts();
     }
 }

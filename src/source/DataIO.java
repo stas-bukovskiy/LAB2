@@ -75,6 +75,8 @@ public class DataIO {
             BufferedWriter bw = new BufferedWriter(new FileWriter(productList));
             for(Product product: Product.getProducts()){
                 result = new StringBuilder("#");
+                result.append(product.getGroupNameInProduct());
+                result.append("%");
                 result.append(product.getProductName());
                 result.append("%");
                 result.append(product.getProductDescription());

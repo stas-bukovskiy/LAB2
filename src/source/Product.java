@@ -138,7 +138,6 @@ public class Product {
                 previous = products.get(j-1);
                 int res = previous.getProductName().toLowerCase().compareTo(current.getProductName().toLowerCase());
                 if(res > 0){
-                    Product temp = previous;
                     products.set(j-1,current);
                     products.set(j,previous);
                 }

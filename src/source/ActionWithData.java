@@ -37,7 +37,6 @@ public class ActionWithData {
             }
             if (product.getProductDescription().contains(whatToFind)){
                 result.add(product);
-                continue;
             }
         }
         if(result.isEmpty())

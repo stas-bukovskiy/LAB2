@@ -1,8 +1,6 @@
 package source;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Існує декілька груп товарів (наприклад: Продовольчі, непродовольчі...).
@@ -42,9 +40,9 @@ public class Group {
         if(unique){
             products = Product.getProducts();
             String oldName = groups.get(index).getGroupName();
-            for(int i = 0; i<products.size(); i++){
-                if(products.get(i).getGroupNameInProduct().equals(oldName)){
-                    products.get(i).setGroupNameInProduct(newGroupName);
+            for (Product product : products) {
+                if (product.getGroupNameInProduct().equals(oldName)) {
+                    product.setGroupNameInProduct(newGroupName);
                 }
             }
             Product.setProducts(products);
@@ -77,7 +75,6 @@ public class Group {
                 previous = groups.get(j-1);
                 int res = previous.getGroupName().toLowerCase().compareTo(current.getGroupName().toLowerCase());
                 if(res > 0){
-                    Group temp = previous;
                     groups.set(j-1,current);
                     groups.set(j,previous);
                 }

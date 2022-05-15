@@ -8,11 +8,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class MainFrame extends JFrame {
 
@@ -82,7 +80,9 @@ public class MainFrame extends JFrame {
         groupComboBox = new JComboBox<>();
         groupComboBox.setPreferredSize(new Dimension(-1, LABEL_HEIGHT));
         nameField = new JTextField();
+        nameField.setName("Name Field");
         descriptionsTextArea = new JTextArea();
+        descriptionsTextArea.setName("Descriptions Field");
         descriptionsTextArea.setFont(PLAIN_FONT_14);
         allInfoTextArea = new JTextArea();
         allInfoTextArea.setFont(PLAIN_FONT_14);
@@ -90,9 +90,12 @@ public class MainFrame extends JFrame {
         allInfoTextArea.setBackground(this.getBackground());
         allInfoTextArea.setFocusable(false);
         amountField = new JTextField();
+        amountField.setName("Amount Field");
         acceptOnlyInteger(amountField);
         producerField = new JTextField();
+        producerField.setName("Producer Field");
         priceField = new JTextField();
+        priceField.setName("Price Field");
         acceptOnlyDouble(priceField);
         searchField = new JTextField();
 
@@ -193,11 +196,15 @@ public class MainFrame extends JFrame {
     private void fillProductTable(String group) {
         DefaultTableModel model = (DefaultTableModel) productsTable.getModel();
         model.setRowCount(0);
-        for (Product product: ActionWithData.findProduct(group)) {
-            if(product.getGroupNameInProduct().equals(group))
-                model.addRow(new String[] {product.getProductName(), product.getProducer(),
-                        String.valueOf(product.getProductQuantityOnStock()), String.valueOf(product.getProductPrice()),
-                        String.valueOf(product.getProductPrice() * product.getProductQuantityOnStock())});
+        try {
+            for (Product product : ActionWithData.findProduct(group)) {
+                if (product.getGroupNameInProduct().equals(group))
+                    model.addRow(new String[]{product.getProductName(), product.getProducer(),
+                            String.valueOf(product.getProductQuantityOnStock()), String.valueOf(product.getProductPrice()),
+                            String.valueOf(product.totalProductCost())});
+            }
+        }catch (RuntimeException e) {
+            System.err.println(e.getMessage());
         }
         productsTable.setModel(model);
     }
@@ -208,7 +215,7 @@ public class MainFrame extends JFrame {
         for (Product product: products) {
             model.addRow(new String[] {product.getProductName(), product.getProducer(),
                         String.valueOf(product.getProductQuantityOnStock()), String.valueOf(product.getProductPrice()),
-                        String.valueOf(product.getProductPrice() * product.getProductQuantityOnStock())});
+                        String.valueOf(product.totalProductCost())});
         }
         productsTable.setModel(model);
     }
@@ -246,16 +253,17 @@ public class MainFrame extends JFrame {
 
     private void fillOpenAndEditProductPanel(int index) {
         Product product = Product.getProducts().get(index);
-        groupComboBox.setSelectedItem(product.getGroupNameInProduct());
+        groupComboBox.setSelectedIndex(index);
         nameField.setText(product.getProductName());
         descriptionsTextArea.setText(product.getProductDescription());
         amountField.setText(String.valueOf(product.getProductQuantityOnStock()));
         priceField.setText(String.valueOf(product.getProductPrice()));
         producerField.setText(product.getProducer());
     }
+
     private JPanel getAllInfoPanel(){
         JPanel res = new JPanel(new GridBagLayout());
-        allInfoTextArea.setText("sdffffvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvffffffffffffffffffffffffffffffffffffffffffffffcccccccccccccccccccccccccccccccc\n\n\n\n\n\n\n\n\n\n\nerteteet");
+        allInfoTextArea.setText(ActionWithData.getAllInfo());
         JScrollPane scrolledAllInfoTextArea = new JScrollPane(allInfoTextArea);
         scrolledAllInfoTextArea.setPreferredSize(new Dimension(-1, 400));
         add(res, scrolledAllInfoTextArea, gbc, 0, 0, 2, 4, 1, 1, BIG_INSERTS);
@@ -382,12 +390,12 @@ public class MainFrame extends JFrame {
         });
         deleteButton.addActionListener(e -> {
             int index = getSelectedRow();
-            if(index != -1 && isConfirmation("Do you really want to delete " + ((current == State.GROUPS) ? Group.getGroups().get(index).getGroupName() : Product.getProducts().get(index).getProductName()) + "?")) {
+            if(index != -1 && isConfirmation("Do you really want to delete " + ((current == State.GROUPS) ? groupsTable.getModel().getValueAt(index, 0) : productsTable.getModel().getValueAt(index, 0)) + "?")) {
                 if(current == State.GROUPS) {
                     Group.deleteGroup(Group.getGroups().get(index).getGroupName());
                     fillGroupTable();
                 }else if (current == State.PRODUCTS) {
-                    Product.delete(index);
+                    Product.delete((String) productsTable.getModel().getValueAt(index, 0));
                     fillProductTable(Group.getGroups().get(previousGroupIndex).getGroupName());
                 }
             }
@@ -414,19 +422,28 @@ public class MainFrame extends JFrame {
             }
         });
         searchButton.addActionListener(e -> {
-            if(current == State.GROUPS) {
+            if(current != State.SEARCHING) {
                 changePanel(getSearchPanel());
                 changeState(State.SEARCHING);
             } else if (current == State.SEARCHING) {
                 if(groupRadioButton.isSelected()) {
-                    ArrayList<Group> groups = ActionWithData.findGroup(searchField.getText());
-                    changePanel(getGroupsPanel());
-                    fillGroupTable(groups);
-                    changeState(State.GROUPS);
+                    try {
+                        ArrayList<Group> groups = ActionWithData.findGroup(searchField.getText());
+                        changePanel(getGroupsPanel());
+                        fillGroupTable(groups);
+                        changeState(State.GROUPS);
+                    }catch (RuntimeException ex) {
+                        showMessage(ex.getMessage(), "Empty result!");
+                    }
                 }else if(productRadioButton.isSelected()) {
-                    ArrayList<Product> products = ActionWithData.findProduct(searchField.getText());
-                    changePanel(getProductsPanel(products));
-                    changeState(State.PRODUCTS);
+                    ArrayList<Product> products;
+                    try {
+                        products = ActionWithData.findProduct(searchField.getText());
+                        changePanel(getProductsPanel(products));
+                        changeState(State.PRODUCTS);
+                    }catch (RuntimeException ex) {
+                        showMessage(ex.getMessage(), "Empty result!");
+                    }
                 }
 
             }
@@ -448,37 +465,68 @@ public class MainFrame extends JFrame {
         });
         saveButton.addActionListener(e -> {
             if(current == State.OPENING_AND_EDITING) {
-                if(previous == State.GROUPS) {
-                    Group.editGroup(editIndex, nameField.getText(), descriptionsTextArea.getText());
-                } else if (previous == State.PRODUCTS) {
-                    Product.getProducts().get(editIndex).editProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                try {
+                    if(previous == State.GROUPS) {
+                        checkIfIsNotEmpty(new JTextField[] {nameField});
+                        checkIfIsNotEmpty(descriptionsTextArea);
+                        Group.editGroup(editIndex, nameField.getText(), descriptionsTextArea.getText());
+                    } else if (previous == State.PRODUCTS) {
+                        checkIfIsNotEmpty(new JTextField[] {nameField, producerField, amountField, priceField});
+                        checkIfIsNotEmpty(descriptionsTextArea);
+                        Product.getProducts().get(editIndex).editProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                    }
+                    if(previous == State.GROUPS) changePanel(getGroupsPanel());
+                    else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
+                    changeState(previous);
+                }catch (RuntimeException ex) {
+                    showMessage(ex.getMessage(), "Some trouble");
                 }
             } else if (current == State.ADDING) {
-                if(previous == State.GROUPS) {
-                    Group.addGroup(nameField.getText(), descriptionsTextArea.getText());
-                } else if (previous == State.PRODUCTS) {
-                    Product.addProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                try {
+                    if (previous == State.GROUPS) {
+                        checkIfIsNotEmpty(new JTextField[] {nameField});
+                        checkIfIsNotEmpty(descriptionsTextArea);
+                        Group.addGroup(nameField.getText(), descriptionsTextArea.getText());
+                    } else if (previous == State.PRODUCTS) {
+                        checkIfIsNotEmpty(new JTextField[] {nameField, producerField, amountField, priceField});
+                        checkIfIsNotEmpty(descriptionsTextArea);
+                        Product.addProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                    }
+                    if(previous == State.GROUPS) changePanel(getGroupsPanel());
+                    else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
+                    changeState(previous);
+                }catch (RuntimeException ex) {
+                    showMessage(ex.getMessage(), "Some trouble");
                 }
             } else if (current == State.ALL_INFO) {
                 JFileChooser fileChooser = getFileChooser();
                 if(fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                    File path = fileChooser.getSelectedFile();
-                    // magic of saving
+                    File file = fileChooser.getSelectedFile();
+                    try (FileWriter writer = new FileWriter(file)){
+                        writer.write(ActionWithData.getAllInfo());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
+                if(previous == State.GROUPS) changePanel(getGroupsPanel());
+                else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
+                changeState(previous);
             }
-            if(previous == State.GROUPS) changePanel(getGroupsPanel());
-            else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
-            changeState(previous);
         });
         writeOffButton.addActionListener(e -> {
             int index = getSelectedRow();
             if(index != -1) {
                 String answer = JOptionPane.showInputDialog(this, "How much do you want to write " + "sth" + " off?", "", JOptionPane.QUESTION_MESSAGE);
                 if(answer!= null) {
-                    if(!isInteger(answer)) JOptionPane.showMessageDialog(this, "You should enter a number!", "Invalid input!", JOptionPane.ERROR_MESSAGE);
-                    else if(Integer.parseInt(answer) <= 0)  JOptionPane.showMessageDialog(this, "You should enter a number that is larger than 0!", "Invalid input!", JOptionPane.ERROR_MESSAGE);
+                    if(!isInteger(answer)) showMessage("You should enter a number!", "Invalid input!");
+                    else if(Integer.parseInt(answer) <= 0)  showMessage("You should enter a number that is larger than 0!", "Invalid input!");
                     else {
-                        //>>>>>>>>>>....
+                        try {
+                            Product.getProducts().get(index).writeOffFromStock(Product.getProducts().get(index).getProductName(), (Integer.parseInt(answer)));
+                            fillProductTable(Group.getGroups().get(previousGroupIndex).getGroupName());
+                        }catch (RuntimeException ex) {
+                            showMessage(ex.getMessage(), "Invalid input!");
+                        }
                     }
                 }
             }
@@ -487,6 +535,29 @@ public class MainFrame extends JFrame {
             changePanel(getAllInfoPanel());
             changeState(State.ALL_INFO);
         });
+    }
+
+    private void checkIfIsNotEmpty(JTextField[] textFields) {
+        for(JTextField textField: textFields){
+            if (textField.getText().isEmpty()) {
+                throw new RuntimeException("Fields '" + textField.getName() + "' is  empty!\nYou should fill it out");
+            } else if (textField.getName().equals("Amount Field")) {
+                if(!isInteger(textField.getText()))
+                    throw new RuntimeException("The value '" + textField.getText()+ "' is invalid!");
+            } else if (textField.getName().equals("Price Field")) {
+                if(!isDouble(textField.getText())) throw new RuntimeException("The value '" + textField.getText()+ "' is invalid!");
+            }
+        }
+    }
+
+    private void checkIfIsNotEmpty(JTextArea textArea) {
+        if (textArea.getText().isEmpty()) {
+            throw new RuntimeException("Fields '" + textArea.getName() + "' is  empty!\nYou should fill it out");
+        }
+    }
+
+    private void showMessage(String text, String title) {
+        JOptionPane.showMessageDialog(this, text, title, JOptionPane.ERROR_MESSAGE);
     }
 
     private JFileChooser getFileChooser() {
@@ -582,6 +653,17 @@ public class MainFrame extends JFrame {
         }
     }
 
+    private boolean isDouble(String answer) {
+        try{
+            Double.parseDouble(answer);
+            return true;
+        }catch (NumberFormatException e){
+            return false;
+        }
+    }
+
+
+
     private void acceptOnlyInteger(JTextField textField) {
         textField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
@@ -597,7 +679,7 @@ public class MainFrame extends JFrame {
         textField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (!((c >= '0') && (c <= '9') || (c == '.') == (c != ',') || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
+                if (!((c >= '0') && (c <= '9') || (c == '.') || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
                     getToolkit().beep();
                     e.consume();
                 }
@@ -606,6 +688,6 @@ public class MainFrame extends JFrame {
     }
 
     private enum State {
-        GROUPS, SEARCH, SEARCHING, OPENING_AND_EDITING, ADDING, ALL_INFO, PRODUCTS
+        GROUPS, SEARCHING, OPENING_AND_EDITING, ADDING, ALL_INFO, PRODUCTS
     }
 }

@@ -22,7 +22,7 @@ public class DataIO {
                 Group.addGroup(groupInfo[1],groupInfo[2]);
             }
         } catch(IOException e){
-            throw new RuntimeException("IO failed");
+            throw new RuntimeException(e);
         }
     }
     public static void readProducts(){
@@ -38,7 +38,7 @@ public class DataIO {
                 }
             }
         } catch(IOException e){
-            throw new RuntimeException("IO failed");
+            throw new RuntimeException(e);
         }
     }
 
@@ -63,7 +63,7 @@ public class DataIO {
             }
             bw.close();
         }catch(IOException e){
-            throw new RuntimeException("File writing failed");
+            throw new RuntimeException(e);
         }
     }
     public static void writeProducts(){
@@ -88,7 +88,7 @@ public class DataIO {
             }
             bw.close();
         }catch(IOException e){
-            throw new RuntimeException("File writing failed");
+            throw new RuntimeException(e);
         }
     }
 }

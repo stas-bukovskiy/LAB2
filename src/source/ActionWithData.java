@@ -38,7 +38,7 @@ public class ActionWithData {
                 continue;
             }
             try{
-                Double.parseDouble(whatToFind));
+//                Double.parseDouble(whatToFind));
 
             } catch(NumberFormatException e){
 

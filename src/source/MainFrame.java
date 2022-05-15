@@ -9,7 +9,9 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainFrame extends JFrame {
@@ -58,11 +60,12 @@ public class MainFrame extends JFrame {
 
     private JTable groupsTable;
     private JTable productsTable;
-    DefaultTableCellRenderer centralRenderer;
+    private DefaultTableCellRenderer centralRenderer;
 
     private State current;
     private State previous;
-    private int previousProductIndex;
+    private int previousGroupIndex;
+    private int editIndex;
 
 
 
@@ -87,11 +90,10 @@ public class MainFrame extends JFrame {
         allInfoTextArea.setBackground(this.getBackground());
         allInfoTextArea.setFocusable(false);
         amountField = new JTextField();
-        acceptOnlyNumbers(amountField);
+        acceptOnlyInteger(amountField);
         producerField = new JTextField();
-        acceptOnlyNumbers(producerField);
         priceField = new JTextField();
-        acceptOnlyNumbers(priceField);
+        acceptOnlyDouble(priceField);
         searchField = new JTextField();
 
         searchProperty = new ButtonGroup();
@@ -128,6 +130,12 @@ public class MainFrame extends JFrame {
         add(res, saveButton, gbc, 0, 5, 1, 1, 1, 1, BIG_INSERTS);
         add(res, cancelButton, gbc, 1, 5, 1, 1, 1, 1, BIG_INSERTS);
         return res;
+    }
+
+    private void fillOpenAndEditGroupPanel(int index) {
+        Group group = Group.getGroups().get(index);
+        nameField.setText(group.getGroupName());
+        descriptionsTextArea.setText(group.getGroupDescription());
     }
 
     private JPanel getSearchPanel() {
@@ -173,8 +181,18 @@ public class MainFrame extends JFrame {
         groupsTable.setModel(model);
     }
 
+    private void fillGroupTable(List<Group> groups) {
+        DefaultTableModel model = (DefaultTableModel) groupsTable.getModel();
+        model.setRowCount(0);
+        for (Group group: groups) {
+            model.addRow(new String[] {group.getGroupName()});
+        }
+        groupsTable.setModel(model);
+    }
+
     private void fillProductTable(String group) {
         DefaultTableModel model = (DefaultTableModel) productsTable.getModel();
+        model.setRowCount(0);
         for (Product product: ActionWithData.findProduct(group)) {
             if(product.getGroupNameInProduct().equals(group))
                 model.addRow(new String[] {product.getProductName(), product.getProducer(),
@@ -183,6 +201,19 @@ public class MainFrame extends JFrame {
         }
         productsTable.setModel(model);
     }
+
+    private void fillProductTable(List<Product> products) {
+        DefaultTableModel model = (DefaultTableModel) productsTable.getModel();
+        model.setRowCount(0);
+        for (Product product: products) {
+            model.addRow(new String[] {product.getProductName(), product.getProducer(),
+                        String.valueOf(product.getProductQuantityOnStock()), String.valueOf(product.getProductPrice()),
+                        String.valueOf(product.getProductPrice() * product.getProductQuantityOnStock())});
+        }
+        productsTable.setModel(model);
+    }
+
+
 
     private JPanel getOpenAndEditProductPanel() {
         JPanel res  = new JPanel(new GridBagLayout());
@@ -212,6 +243,16 @@ public class MainFrame extends JFrame {
         add(res, cancelButton, gbc, 1, 9, 1, 1, 1, 0.1, BIG_INSERTS);
         return res;
     }
+
+    private void fillOpenAndEditProductPanel(int index) {
+        Product product = Product.getProducts().get(index);
+        groupComboBox.setSelectedItem(product.getGroupNameInProduct());
+        nameField.setText(product.getProductName());
+        descriptionsTextArea.setText(product.getProductDescription());
+        amountField.setText(String.valueOf(product.getProductQuantityOnStock()));
+        priceField.setText(String.valueOf(product.getProductPrice()));
+        producerField.setText(product.getProducer());
+    }
     private JPanel getAllInfoPanel(){
         JPanel res = new JPanel(new GridBagLayout());
         allInfoTextArea.setText("sdffffvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvffffffffffffffffffffffffffffffffffffffffffffffcccccccccccccccccccccccccccccccc\n\n\n\n\n\n\n\n\n\n\nerteteet");
@@ -230,7 +271,28 @@ public class MainFrame extends JFrame {
 
         JScrollPane scrolledGroupsTable = new JScrollPane(productsTable);
         scrolledGroupsTable.setPreferredSize(new Dimension(-1, 380));
-        JLabel groupNameLabel = new JLabel("Group: " + "____________", SwingConstants.CENTER);
+        JLabel groupNameLabel = new JLabel("Group: " + Group.getGroups().get(groupIndex).getGroupName(), SwingConstants.CENTER);
+        groupNameLabel.setFont(PLAIN_FONT_16);
+
+        add(res, groupNameLabel, gbc, 0, 0, 3, 1, 1, 1, BIG_INSERTS);
+        add(res, scrolledGroupsTable, gbc, 0, 1, 3, 3, 1, 1, BIG_INSERTS);
+        add(res, editButton, gbc, 0, 4, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, writeOffButton, gbc, 1, 4, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, deleteButton, gbc, 2, 4, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, addButton, gbc, 0, 5, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, searchButton, gbc, 1, 5, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, backButton, gbc, 2, 5, 1, 1, 1, 1, BIG_INSERTS);
+        return res;
+    }
+
+    private JPanel getProductsPanel(List<Product> products) {
+        JPanel res = new JPanel(new GridBagLayout());
+
+        fillProductTable(products);
+
+        JScrollPane scrolledGroupsTable = new JScrollPane(productsTable);
+        scrolledGroupsTable.setPreferredSize(new Dimension(-1, 380));
+        JLabel groupNameLabel = new JLabel("", SwingConstants.CENTER);
         groupNameLabel.setFont(PLAIN_FONT_16);
 
         add(res, groupNameLabel, gbc, 0, 0, 3, 1, 1, 1, BIG_INSERTS);
@@ -316,13 +378,18 @@ public class MainFrame extends JFrame {
                 changePanel(getProductsPanel(index));
                 changeState(State.PRODUCTS);
             }
-            previousProductIndex = index;
+            previousGroupIndex = index;
         });
         deleteButton.addActionListener(e -> {
             int index = getSelectedRow();
-            if(index != -1 && isConfirmation("Do you really want to delete " + Group.getGroups().get(index).getGroupName() + "?")) {
-                //Group.deleteGroup(Group.getGroups().get(index).getGroupName());
-                fillGroupTable();
+            if(index != -1 && isConfirmation("Do you really want to delete " + ((current == State.GROUPS) ? Group.getGroups().get(index).getGroupName() : Product.getProducts().get(index).getProductName()) + "?")) {
+                if(current == State.GROUPS) {
+                    Group.deleteGroup(Group.getGroups().get(index).getGroupName());
+                    fillGroupTable();
+                }else if (current == State.PRODUCTS) {
+                    Product.delete(index);
+                    fillProductTable(Group.getGroups().get(previousGroupIndex).getGroupName());
+                }
             }
         });
         addButton.addActionListener(e -> {
@@ -342,7 +409,7 @@ public class MainFrame extends JFrame {
         cancelButton.addActionListener(e -> {
             if(current != State.GROUPS && current != State.PRODUCTS) {
                 if(previous == State.GROUPS) changePanel(getGroupsPanel());
-                else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousProductIndex));
+                else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
                 changeState(previous);
             }
         });
@@ -351,9 +418,17 @@ public class MainFrame extends JFrame {
                 changePanel(getSearchPanel());
                 changeState(State.SEARCHING);
             } else if (current == State.SEARCHING) {
-                // magic of searching
-                changePanel(getGroupsPanel());
-                changeState(State.GROUPS);
+                if(groupRadioButton.isSelected()) {
+                    ArrayList<Group> groups = ActionWithData.findGroup(searchField.getText());
+                    changePanel(getGroupsPanel());
+                    fillGroupTable(groups);
+                    changeState(State.GROUPS);
+                }else if(productRadioButton.isSelected()) {
+                    ArrayList<Product> products = ActionWithData.findProduct(searchField.getText());
+                    changePanel(getProductsPanel(products));
+                    changeState(State.PRODUCTS);
+                }
+
             }
         });
         editButton.addActionListener(e -> {
@@ -361,20 +436,28 @@ public class MainFrame extends JFrame {
             if(index != -1) {
                 if (current == State.GROUPS) {
                     changePanel(getOpenAndEditGroupPanel());
+                    fillOpenAndEditGroupPanel(index);
+                    editIndex = index;
                 } else if (current == State.PRODUCTS) {
                     changePanel(getOpenAndEditProductPanel());
+                    fillOpenAndEditProductPanel(index);
+                    editIndex = index;
                 }
                 changeState(State.OPENING_AND_EDITING);
             }
         });
         saveButton.addActionListener(e -> {
             if(current == State.OPENING_AND_EDITING) {
-
+                if(previous == State.GROUPS) {
+                    Group.editGroup(editIndex, nameField.getText(), descriptionsTextArea.getText());
+                } else if (previous == State.PRODUCTS) {
+                    Product.getProducts().get(editIndex).editProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                }
             } else if (current == State.ADDING) {
                 if(previous == State.GROUPS) {
                     Group.addGroup(nameField.getText(), descriptionsTextArea.getText());
                 } else if (previous == State.PRODUCTS) {
-//                    Product.addProduct();
+                    Product.addProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
                 }
             } else if (current == State.ALL_INFO) {
                 JFileChooser fileChooser = getFileChooser();
@@ -384,7 +467,7 @@ public class MainFrame extends JFrame {
                 }
             }
             if(previous == State.GROUPS) changePanel(getGroupsPanel());
-            else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousProductIndex));
+            else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
             changeState(previous);
         });
         writeOffButton.addActionListener(e -> {
@@ -499,11 +582,23 @@ public class MainFrame extends JFrame {
         }
     }
 
-    private void acceptOnlyNumbers(JTextField textField) {
+    private void acceptOnlyInteger(JTextField textField) {
         textField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
                 if ( ((c < '0') || (c > '9')) && (c != KeyEvent.VK_BACK_SPACE)) {
+                    e.consume();
+                }
+            }
+        });
+    }
+
+    private void acceptOnlyDouble(JTextField textField) {
+        textField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!((c >= '0') && (c <= '9') || (c == '.') == (c != ',') || (c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
+                    getToolkit().beep();
                     e.consume();
                 }
             }

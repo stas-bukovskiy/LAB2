@@ -39,7 +39,7 @@ public class Product {
         else
             System.err.println("Try to add product with (lower than 0 price or negative quantity)");
     }
-    public void editProduct( String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
+    public void editProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
         boolean uniqueName = true;
         boolean groupExist = false;
         for(Product product: products){
@@ -73,7 +73,7 @@ public class Product {
             System.err.println("Try to set incorrect price");
 
     }
-    public void delete(int index){
+    public static void delete(int index){
         products.remove(index);
     }
 

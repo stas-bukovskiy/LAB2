@@ -17,6 +17,7 @@ import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The class extends JFrame and is main frame that conducts all operations with Product and Group class
@@ -279,7 +280,9 @@ public class MainFrame extends JFrame {
         amountField.setText("");
         priceField.setText("");
         producerField.setText("");
+        groupComboBox.removeAllItems();
         for (Group group :Group.getGroups()) groupComboBox.addItem(group.getGroupName());
+        groupComboBox.setSelectedIndex(previousGroupIndex);
         res.setBorder(new EmptyBorder(0, 50, 0, 50));
         JScrollPane scrolledDescriptionsTextArea = new JScrollPane(descriptionsTextArea);
         scrolledDescriptionsTextArea.setPreferredSize(new Dimension(-1, 200));
@@ -306,7 +309,10 @@ public class MainFrame extends JFrame {
      * @param index - index of group which products will be displayed on components
      */
     private void fillOpenAndEditProductPanel(int index) {
-        Product product = Product.getProducts().get(index);
+        Product product = Product.getProducts().stream().filter(p -> p.getGroupNameInProduct().equalsIgnoreCase(Group.getGroups().get(previousGroupIndex).getGroupName())).toList().get(index);
+
+        groupComboBox.removeAllItems();
+        for (Group group :Group.getGroups()) groupComboBox.addItem(group.getGroupName());
         groupComboBox.setSelectedIndex(previousGroupIndex);
         nameField.setText(product.getProductName());
         descriptionsTextArea.setText(product.getProductDescription());
@@ -337,6 +343,7 @@ public class MainFrame extends JFrame {
      */
     private JPanel getProductsPanel(int groupIndex) {
         JPanel res = new JPanel(new GridBagLayout());
+
 
        fillProductTable(Group.getGroups().get(groupIndex).getGroupName());
 
@@ -552,7 +559,9 @@ public class MainFrame extends JFrame {
                     } else if (previous == State.PRODUCTS) {
                         checkIfIsNotEmpty(new JTextField[] {nameField, producerField, amountField, priceField});
                         checkIfIsNotEmpty(descriptionsTextArea);
-                        Product.getProducts().get(editIndex).editProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                        System.out.println((String) groupComboBox.getSelectedItem());
+                        Product.getProducts().stream().filter(p -> p.getGroupNameInProduct().equalsIgnoreCase(Group.getGroups().get(previousGroupIndex).getGroupName())).collect(Collectors.toList()).get(editIndex).editProduct((String) groupComboBox.getSelectedItem(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+//                        Product.getProducts().stream().filter(p -> p.getGroupNameInProduct().equalsIgnoreCase(Group.getGroups().get(previousGroupIndex).getGroupName())).collect(Collectors.toList()).get(editIndex).setGroupNameInProduct();
                         DataIO.writeProducts();
                     }
                     if(previous == State.GROUPS) changePanel(getGroupsPanel());

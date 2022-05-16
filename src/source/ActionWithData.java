@@ -2,7 +2,6 @@ package source;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ActionWithData {
     public static ArrayList<?> find(int choose, String whatToFind){

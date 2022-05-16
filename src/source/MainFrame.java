@@ -245,7 +245,7 @@ public class MainFrame extends JFrame {
                 if (product.getGroupNameInProduct().equals(group))
                     model.addRow(new String[]{product.getProductName(), product.getProducer(),
                             String.valueOf(product.getProductQuantityOnStock()), String.valueOf(product.getProductPrice()),
-                            String.valueOf(product.totalProductCost())});
+                            String.format("%.2f", product.totalProductCost())});
             }
         }catch (RuntimeException e) {
             System.err.println(e.getMessage());
@@ -263,7 +263,7 @@ public class MainFrame extends JFrame {
         for (Product product: products) {
             model.addRow(new String[] {product.getProductName(), product.getProducer(),
                         String.valueOf(product.getProductQuantityOnStock()), String.valueOf(product.getProductPrice()),
-                        String.valueOf(product.totalProductCost())});
+                        String.format("%.2f", product.totalProductCost())});
         }
         productsTable.setModel(model);
     }

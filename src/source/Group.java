@@ -49,6 +49,7 @@ public class Group {
     }
     public static void deleteGroup(String groupName){
         groups.removeIf(group -> group.getGroupName().equalsIgnoreCase(groupName));
+        remove(groupName);
     }
     /**Use when you remove group to remove all products in this group*/
     public static void remove(String groupName){

@@ -2,7 +2,6 @@ package source;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ActionWithData {
     public static ArrayList<?> find(int choose, String whatToFind){
@@ -18,7 +17,6 @@ public class ActionWithData {
             if(group.getGroupName().toLowerCase().contains(whatToFind.toLowerCase())){
                 result.add(group);
                 continue;
-
             }
             if(group.getGroupDescription().toLowerCase().contains(whatToFind.toLowerCase()))
                 result.add(group);

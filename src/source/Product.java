@@ -26,29 +26,24 @@ public class Product {
         this.productPrice=productPrice;
     }
     public static void addProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
-        boolean unique = true;
         for(Product product:products){
             if(product.getProductName().equals(productName)){
-                unique = false;
                 throw new RuntimeException("Try to add non unique product");
             }
         }
-        if(unique && productPrice>0 && productQuantityOnStock>=0)
+        if(productPrice>0 && productQuantityOnStock>=0)
             products.add(new Product(groupNameInProduct,productName,productDescription,producer,productQuantityOnStock,productPrice));
         else
             throw new RuntimeException("Try to add product with (lower than 0 price or negative quantity)");
     }
     public void editProduct(String groupNameInProduct, String productName, String productDescription, String producer, int productQuantityOnStock, double productPrice){
-        boolean uniqueName = true;
         boolean groupExist = false;
         for(Product product: products){
-            if(product.getProductName().equals(productName)){
-                uniqueName = false;
+            if(product.getProductName().equals(productName) && this != product){
                 throw new RuntimeException("Try to change product name to non unique");
             }
         }
-        if(uniqueName)
-            setProductName(productName);
+        setProductName(productName);
         for(Group group: Group.getGroups()){
             if(group.getGroupName().equals(groupNameInProduct)){
                 groupExist = true;

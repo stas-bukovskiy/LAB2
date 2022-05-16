@@ -18,6 +18,7 @@ public class ActionWithData {
             if(group.getGroupName().toLowerCase().contains(whatToFind.toLowerCase())){
                 result.add(group);
                 continue;
+
             }
             if(group.getGroupDescription().toLowerCase().contains(whatToFind.toLowerCase()))
                 result.add(group);

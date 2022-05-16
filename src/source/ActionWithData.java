@@ -15,11 +15,11 @@ public class ActionWithData {
     public static ArrayList<Group> findGroup(String whatToFind){
         ArrayList<Group> result = new ArrayList<>();
         for(Group group: Group.getGroups()){
-            if(group.getGroupName().contains(whatToFind)){
+            if(group.getGroupName().toLowerCase().contains(whatToFind.toLowerCase())){
                 result.add(group);
                 continue;
             }
-            if(group.getGroupDescription().contains(whatToFind))
+            if(group.getGroupDescription().toLowerCase().contains(whatToFind.toLowerCase()))
                 result.add(group);
         }
         if(result.isEmpty())
@@ -29,15 +29,15 @@ public class ActionWithData {
     public static ArrayList<Product> findProduct(String whatToFind){
         ArrayList<Product> result = new ArrayList<>();
         for(Product product: Product.getProducts()) {
-            if (product.getGroupNameInProduct().contains(whatToFind)) {
+            if (product.getGroupNameInProduct().toLowerCase().contains(whatToFind.toLowerCase())) {
                 result.add(product);
                 continue;
             }
-            if (product.getProductName().contains(whatToFind)){
+            if (product.getProductName().toLowerCase().contains(whatToFind.toLowerCase())){
                 result.add(product);
                 continue;
             }
-            if (product.getProductDescription().contains(whatToFind)){
+            if (product.getProductDescription().toLowerCase().contains(whatToFind.toLowerCase())){
                 result.add(product);
             }
         }

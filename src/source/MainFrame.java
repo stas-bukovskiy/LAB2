@@ -1,3 +1,9 @@
+/*
+    File: MainFrame.java
+    Author: Stanislav Bukovskiy
+
+    The file consist MainFrame class that is main GUI frane from program.
+ */
 package source;
 
 import javax.swing.*;
@@ -12,23 +18,35 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * The class extends JFrame and is main frame that conducts all operations with Product and Group class
+ */
 public class MainFrame extends JFrame {
 
+    /**
+     *  The method starts program
+=     */
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();
         frame.setVisible(true);
     }
 
+    /** The const of frame width */
     public static final int WIDTH = 700;
+    /** The const of frame height */
     public static final int HEIGHT = 600;
+    /** The const of button height */
     public static final int BUTTON_HEIGHT = 35;
+    /** The const of label height */
     public static final int LABEL_HEIGHT = 25;
+    /** The const of Arial font with size 14 */
     public static final Font PLAIN_FONT_14 = new Font("Arial", Font.PLAIN, 14);
+    /** The const of Arial font with size 16 */
     public static final Font PLAIN_FONT_16 = new Font("Arial", Font.PLAIN, 16);
-    public static final int BIG_INSERTS = 10;
-    public static final int SMALL_INSERTS = 5;
+    /** The const of component inserts */
+    public static final int INSERTS = 10;
 
-    GridBagConstraints gbc;
+    private GridBagConstraints gbc;
 
     private JButton saveButton;
     private JButton cancelButton;
@@ -40,12 +58,10 @@ public class MainFrame extends JFrame {
     private JButton writeOffButton;
     private JButton searchButton;
     private JButton printALlInfoButton;
-    private JButton[] buttons;
 
     private Map<String, JLabel> labels;
 
     private JComboBox<String> groupComboBox;
-    private ButtonGroup searchProperty;
     private JTextField searchField;
     private JRadioButton groupRadioButton;
     private JRadioButton productRadioButton;
@@ -58,15 +74,13 @@ public class MainFrame extends JFrame {
 
     private JTable groupsTable;
     private JTable productsTable;
-    private DefaultTableCellRenderer centralRenderer;
 
     private State current;
     private State previous;
     private int previousGroupIndex;
     private int editIndex;
 
-
-
+    /** The constructor of class that inits all components of frame*/
     public  MainFrame(){
         initFrame();
         initComponents();
@@ -76,6 +90,9 @@ public class MainFrame extends JFrame {
         current = State.GROUPS;
     }
 
+    /**
+     * The method inits text areas and fields, buttons, labels, combo box and table components.
+     */
     private void initComponents() {
         groupComboBox = new JComboBox<>();
         groupComboBox.setPreferredSize(new Dimension(-1, LABEL_HEIGHT));
@@ -99,7 +116,7 @@ public class MainFrame extends JFrame {
         acceptOnlyDouble(priceField);
         searchField = new JTextField();
 
-        searchProperty = new ButtonGroup();
+        ButtonGroup searchProperty = new ButtonGroup();
         groupRadioButton = new JRadioButton("Group");
         groupRadioButton.setFont(PLAIN_FONT_16);
         productRadioButton = new JRadioButton("Product");
@@ -119,6 +136,10 @@ public class MainFrame extends JFrame {
         gbc = new GridBagConstraints();
     }
 
+    /**
+     * The method creates and returns JPanel instance for opening and editing product group.
+     * @return JPanel instance for opening and editing product group.
+     */
     private JPanel getOpenAndEditGroupPanel() {
         JPanel res = new JPanel(new GridBagLayout());
         res.setBorder(new EmptyBorder(50, 50, 50, 50));
@@ -126,36 +147,48 @@ public class MainFrame extends JFrame {
         descriptionsTextArea.setText("");
         JScrollPane scrolledDescriptionsTextArea = new JScrollPane(descriptionsTextArea);
         scrolledDescriptionsTextArea.setPreferredSize(new Dimension(-1, 200));
-        add(res, labels.get("Name"), gbc, 0, 0, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, nameField, gbc, 1, 0, 1, 1,1, 1, BIG_INSERTS);
-        add(res, labels.get("Description"), gbc, 0, 1, 2, 1,1, 1, BIG_INSERTS);
-        add(res, scrolledDescriptionsTextArea, gbc, 0, 2, 2, 3, 1, 1, BIG_INSERTS);
-        add(res, saveButton, gbc, 0, 5, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, cancelButton, gbc, 1, 5, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, labels.get("Name"), 0, 0, 1, 1, 1, 1);
+        add(res, nameField, 1, 0, 1, 1,1, 1);
+        add(res, labels.get("Description"), 0, 1, 2, 1,1, 1);
+        add(res, scrolledDescriptionsTextArea,0, 2, 2, 3, 1, 1);
+        add(res, saveButton, 0, 5, 1, 1, 1, 1);
+        add(res, cancelButton, 1, 5, 1, 1, 1, 1);
         return res;
     }
 
+    /**
+     * The method fill text field and area that is shown OpenAndEditGroupPanel out
+     * @param index - index of group which information will be displayed on components
+     */
     private void fillOpenAndEditGroupPanel(int index) {
         Group group = Group.getGroups().get(index);
         nameField.setText(group.getGroupName());
         descriptionsTextArea.setText(group.getGroupDescription());
     }
 
+    /**
+     * The method creates and returns JPanel instance for searching groups or products.
+     * @return JPanel instance for searching groups or products.
+     */
     private JPanel getSearchPanel() {
         JPanel res = new JPanel(new GridBagLayout());
 
         res.setBorder(new EmptyBorder(125, 75, 125, 75));
 
-        add(res, labels.get("Name"), gbc, 0, 0, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, searchField, gbc, 1, 0, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, labels.get("Filter"), gbc, 0, 2, 1, 2, 1, 1, BIG_INSERTS);
-        add(res, productRadioButton, gbc, 1, 2, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, groupRadioButton, gbc, 1, 3, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, searchButton, gbc, 0, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, cancelButton, gbc, 1, 4, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, labels.get("Name"), 0, 0, 1, 1, 1, 1);
+        add(res, searchField, 1, 0, 1, 1, 1, 1);
+        add(res, labels.get("Filter"), 0, 2, 1, 2, 1, 1);
+        add(res, productRadioButton, 1, 2, 1, 1, 1, 1);
+        add(res, groupRadioButton, 1, 3, 1, 1, 1, 1);
+        add(res, searchButton, 0, 4, 1, 1, 1, 1);
+        add(res, cancelButton, 1, 4, 1, 1, 1, 1);
         return res;
     }
 
+    /**
+     * The method creates, fills and returns JPanel instance table filled with product groups.
+     * @return JPanel instance table filled with product groups
+     */
     private JPanel getGroupsPanel() {
         JPanel res = new JPanel(new GridBagLayout());
 
@@ -164,17 +197,20 @@ public class MainFrame extends JFrame {
         JScrollPane scrolledGroupsTable = new JScrollPane(groupsTable);
         scrolledGroupsTable.setPreferredSize(new Dimension(-1, 360));
 
-        add(res, scrolledGroupsTable, gbc, 0, 0, 3, 3, 1, 1, BIG_INSERTS);
-        add(res, openButton, gbc, 0, 3, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, editButton, gbc, 1, 3, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, deleteButton, gbc, 2, 3, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, addButton, gbc, 0, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, searchButton, gbc, 1, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, backButton, gbc, 2, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, printALlInfoButton, gbc, 1, 5, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, scrolledGroupsTable, 0, 0, 3, 3, 1, 1);
+        add(res, openButton, 0, 3, 1, 1, 1, 1);
+        add(res, editButton, 1, 3, 1, 1, 1, 1);
+        add(res, deleteButton, 2, 3, 1, 1, 1, 1);
+        add(res, addButton, 0, 4, 1, 1, 1, 1);
+        add(res, searchButton, 1, 4, 1, 1, 1, 1);
+        add(res, backButton, 2, 4, 1, 1, 1, 1);
+        add(res, printALlInfoButton, 1, 5, 1, 1, 1, 1);
         return res;
     }
 
+    /**
+     * The method fill groups table with data from the file
+     */
     private void fillGroupTable() {
         DefaultTableModel model = (DefaultTableModel) groupsTable.getModel();
         model.setRowCount(0);
@@ -184,6 +220,10 @@ public class MainFrame extends JFrame {
         groupsTable.setModel(model);
     }
 
+    /**
+     * The method fill groups table with data from received groups list
+     * @param groups - list that will be displayed on groups table
+     */
     private void fillGroupTable(List<Group> groups) {
         DefaultTableModel model = (DefaultTableModel) groupsTable.getModel();
         model.setRowCount(0);
@@ -193,6 +233,10 @@ public class MainFrame extends JFrame {
         groupsTable.setModel(model);
     }
 
+    /**
+     * The method fill products table with data from file
+     * @param group - name of group, that contains products that will be displayed
+     */
     private void fillProductTable(String group) {
         DefaultTableModel model = (DefaultTableModel) productsTable.getModel();
         model.setRowCount(0);
@@ -209,6 +253,10 @@ public class MainFrame extends JFrame {
         productsTable.setModel(model);
     }
 
+    /**
+     * The method fill products table out with products from received products list
+     * @param products - list with products that will be displayed
+     */
     private void fillProductTable(List<Product> products) {
         DefaultTableModel model = (DefaultTableModel) productsTable.getModel();
         model.setRowCount(0);
@@ -220,8 +268,10 @@ public class MainFrame extends JFrame {
         productsTable.setModel(model);
     }
 
-
-
+    /**
+     * The method creates and returns JPanel instance for opening and editing products.
+     * @return JPanel instance for opening and editing product group.
+     */
     private JPanel getOpenAndEditProductPanel() {
         JPanel res  = new JPanel(new GridBagLayout());
         nameField.setText("");
@@ -234,23 +284,27 @@ public class MainFrame extends JFrame {
         JScrollPane scrolledDescriptionsTextArea = new JScrollPane(descriptionsTextArea);
         scrolledDescriptionsTextArea.setPreferredSize(new Dimension(-1, 200));
 
-        add(res, labels.get("Group"), gbc, 0, 0, 1, 1, 0.1, 0.1, BIG_INSERTS);
-        add(res, groupComboBox, gbc, 1, 0, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, labels.get("Name"), gbc, 0, 1, 1, 1, 0.1, 0.1, BIG_INSERTS);
-        add(res, nameField, gbc, 1, 1, 1, 1, 1, 0.1, BIG_INSERTS);
-        add(res, labels.get("Description"), gbc, 0, 2, 2, 1, 1, 0.1, BIG_INSERTS);
-        add(res, scrolledDescriptionsTextArea, gbc, 0, 3, 2, 3, 1, 1, BIG_INSERTS);
-        add(res, labels.get("Amount"), gbc, 0, 6, 1, 1, 0.1, 0.1, BIG_INSERTS);
-        add(res, amountField, gbc, 1, 6, 1, 1, 1, 0.1, BIG_INSERTS);
-        add(res, labels.get("Cost"), gbc, 0, 7, 1, 1, 0.1, 0.1, BIG_INSERTS);
-        add(res, priceField, gbc, 1, 7, 1, 1, 1, 0.1, BIG_INSERTS);
-        add(res, labels.get("Producer"), gbc, 0, 8, 1, 1, 0.1, 0.1, BIG_INSERTS);
-        add(res, producerField, gbc, 1, 8, 1, 1, 1, 0.1, BIG_INSERTS);
-        add(res, saveButton, gbc, 0, 9, 1, 1, 1, 0.1, BIG_INSERTS);
-        add(res, cancelButton, gbc, 1, 9, 1, 1, 1, 0.1, BIG_INSERTS);
+        add(res, labels.get("Group"), 0, 0, 1, 1, 0.1, 0.1);
+        add(res, groupComboBox, 1, 0, 1, 1, 1, 1);
+        add(res, labels.get("Name"), 0, 1, 1, 1, 0.1, 0.1);
+        add(res, nameField, 1, 1, 1, 1, 1, 0.1);
+        add(res, labels.get("Description"), 0, 2, 2, 1, 1, 0.1);
+        add(res, scrolledDescriptionsTextArea, 0, 3, 2, 3, 1, 1);
+        add(res, labels.get("Amount"), 0, 6, 1, 1, 0.1, 0.1);
+        add(res, amountField, 1, 6, 1, 1, 1, 0.1);
+        add(res, labels.get("Cost"), 0, 7, 1, 1, 0.1, 0.1);
+        add(res, priceField, 1, 7, 1, 1, 1, 0.1);
+        add(res, labels.get("Producer"), 0, 8, 1, 1, 0.1, 0.1);
+        add(res, producerField, 1, 8, 1, 1, 1, 0.1);
+        add(res, saveButton, 0, 9, 1, 1, 1, 0.1);
+        add(res, cancelButton, 1, 9, 1, 1, 1, 0.1);
         return res;
     }
 
+    /**
+     * The method fill text fields and areas that is shown OpenAndEditProductPanel out
+     * @param index - index of group which products will be displayed on components
+     */
     private void fillOpenAndEditProductPanel(int index) {
         Product product = Product.getProducts().get(index);
         groupComboBox.setSelectedIndex(previousGroupIndex);
@@ -261,17 +315,26 @@ public class MainFrame extends JFrame {
         producerField.setText(product.getProducer());
     }
 
+    /**
+     * The method creates, fills and returns JPanel instance filled with overall information about groups and products
+     * @return JPanel instance filled with overall information about groups and products
+     */
     private JPanel getAllInfoPanel(){
         JPanel res = new JPanel(new GridBagLayout());
         allInfoTextArea.setText(ActionWithData.getAllInfo());
         JScrollPane scrolledAllInfoTextArea = new JScrollPane(allInfoTextArea);
         scrolledAllInfoTextArea.setPreferredSize(new Dimension(-1, 400));
-        add(res, scrolledAllInfoTextArea, gbc, 0, 0, 2, 4, 1, 1, BIG_INSERTS);
-        add(res, saveButton, gbc, 0, 5, 1, 1, 1, 0.1, BIG_INSERTS);
-        add(res, backButton, gbc, 1, 5, 1, 1, 1, 0.1, BIG_INSERTS);
+        add(res, scrolledAllInfoTextArea, 0, 0, 2, 4, 1, 1);
+        add(res, saveButton, 0, 5, 1, 1, 1, 0.1);
+        add(res, backButton, 1, 5, 1, 1, 1, 0.1);
         return res;
     }
 
+    /**
+     * The method creates, fills and returns JPanel filled with products from group with received index
+     * @param groupIndex - index of group which products will be displayed
+     * @return JPanel filled with products from group with received index
+     */
     private JPanel getProductsPanel(int groupIndex) {
         JPanel res = new JPanel(new GridBagLayout());
 
@@ -280,19 +343,35 @@ public class MainFrame extends JFrame {
         JScrollPane scrolledGroupsTable = new JScrollPane(productsTable);
         scrolledGroupsTable.setPreferredSize(new Dimension(-1, 380));
         JLabel groupNameLabel = new JLabel("Group: " + Group.getGroups().get(groupIndex).getGroupName(), SwingConstants.CENTER);
+        return getStaringProductPanel(res, scrolledGroupsTable, groupNameLabel);
+    }
+
+    /**
+     * The method returns starting ProductPanel
+     * @param res - JPanel where components will be displayed
+     * @param scrolledGroupsTable - table for products
+     * @param groupNameLabel - label with name of group
+     * @return starting ProductPanel
+     */
+    private JPanel getStaringProductPanel(JPanel res, JScrollPane scrolledGroupsTable, JLabel groupNameLabel) {
         groupNameLabel.setFont(PLAIN_FONT_16);
 
-        add(res, groupNameLabel, gbc, 0, 0, 3, 1, 1, 1, BIG_INSERTS);
-        add(res, scrolledGroupsTable, gbc, 0, 1, 3, 3, 1, 1, BIG_INSERTS);
-        add(res, editButton, gbc, 0, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, writeOffButton, gbc, 1, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, deleteButton, gbc, 2, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, addButton, gbc, 0, 5, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, searchButton, gbc, 1, 5, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, backButton, gbc, 2, 5, 1, 1, 1, 1, BIG_INSERTS);
+        add(res, groupNameLabel, 0, 0, 3, 1, 1, 1);
+        add(res, scrolledGroupsTable, 0, 1, 3, 3, 1, 1);
+        add(res, editButton, 0, 4, 1, 1, 1, 1);
+        add(res, writeOffButton, 1, 4, 1, 1, 1, 1);
+        add(res, deleteButton, 2, 4, 1, 1, 1, 1);
+        add(res, addButton, 0, 5, 1, 1, 1, 1);
+        add(res, searchButton, 1, 5, 1, 1, 1, 1);
+        add(res, backButton, 2, 5, 1, 1, 1, 1);
         return res;
     }
 
+    /**
+     * The method creates, fills and returns JPanel filled with products from products list
+     * @param products - list that contains product that will be displayed
+     * @return JPanel filled with products from products list
+     */
     private JPanel getProductsPanel(List<Product> products) {
         JPanel res = new JPanel(new GridBagLayout());
 
@@ -301,21 +380,14 @@ public class MainFrame extends JFrame {
         JScrollPane scrolledGroupsTable = new JScrollPane(productsTable);
         scrolledGroupsTable.setPreferredSize(new Dimension(-1, 380));
         JLabel groupNameLabel = new JLabel("", SwingConstants.CENTER);
-        groupNameLabel.setFont(PLAIN_FONT_16);
-
-        add(res, groupNameLabel, gbc, 0, 0, 3, 1, 1, 1, BIG_INSERTS);
-        add(res, scrolledGroupsTable, gbc, 0, 1, 3, 3, 1, 1, BIG_INSERTS);
-        add(res, editButton, gbc, 0, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, writeOffButton, gbc, 1, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, deleteButton, gbc, 2, 4, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, addButton, gbc, 0, 5, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, searchButton, gbc, 1, 5, 1, 1, 1, 1, BIG_INSERTS);
-        add(res, backButton, gbc, 2, 5, 1, 1, 1, 1, BIG_INSERTS);
-        return res;
+        return getStaringProductPanel(res, scrolledGroupsTable, groupNameLabel);
     }
 
+    /**
+     * The method inits table components
+     */
     private void initTableComponents() {
-        centralRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer centralRenderer = new DefaultTableCellRenderer();
         centralRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
         DefaultTableModel model = new DefaultTableModel();
@@ -360,7 +432,9 @@ public class MainFrame extends JFrame {
         productsTable.setFont(PLAIN_FONT_14);
     }
 
-
+    /**
+     *  The method inits all buttons
+     */
     private void initButtons() {
         searchButton = new JButton("Search");
         saveButton = new JButton("Save");
@@ -372,13 +446,16 @@ public class MainFrame extends JFrame {
         backButton = new JButton("Back");
         writeOffButton = new JButton("Write Off");
         printALlInfoButton = new JButton("Print All Info");
-        buttons = new JButton[]{saveButton, cancelButton, addButton, openButton, editButton, deleteButton, backButton, writeOffButton, searchButton, printALlInfoButton};
+        JButton[] buttons = new JButton[]{saveButton, cancelButton, addButton, openButton, editButton, deleteButton, backButton, writeOffButton, searchButton, printALlInfoButton};
         for (JButton button : buttons) {
             button.setFont(PLAIN_FONT_14);
             button.setPreferredSize(new Dimension(-1, BUTTON_HEIGHT));
         }
     }
 
+    /**
+     * The method add actionListener to all buttons
+     */
     private void initListeners(){
         openButton.addActionListener(e -> {
             int index = getSelectedRow();
@@ -394,9 +471,11 @@ public class MainFrame extends JFrame {
                 if(current == State.GROUPS) {
                     Group.deleteGroup(Group.getGroups().get(index).getGroupName());
                     fillGroupTable();
+                    DataIO.writeGroups();
                 }else if (current == State.PRODUCTS) {
                     Product.delete((String) productsTable.getModel().getValueAt(index, 0));
                     fillProductTable(Group.getGroups().get(previousGroupIndex).getGroupName());
+                    DataIO.writeProducts();
                 }
             }
         });
@@ -445,7 +524,6 @@ public class MainFrame extends JFrame {
                         showMessage(ex.getMessage(), "Empty result!");
                     }
                 }
-
             }
         });
         editButton.addActionListener(e -> {
@@ -470,10 +548,12 @@ public class MainFrame extends JFrame {
                         checkIfIsNotEmpty(new JTextField[] {nameField});
                         checkIfIsNotEmpty(descriptionsTextArea);
                         Group.editGroup(editIndex, nameField.getText(), descriptionsTextArea.getText());
+                        DataIO.writeGroups();
                     } else if (previous == State.PRODUCTS) {
                         checkIfIsNotEmpty(new JTextField[] {nameField, producerField, amountField, priceField});
                         checkIfIsNotEmpty(descriptionsTextArea);
                         Product.getProducts().get(editIndex).editProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                        DataIO.writeProducts();
                     }
                     if(previous == State.GROUPS) changePanel(getGroupsPanel());
                     else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
@@ -487,10 +567,12 @@ public class MainFrame extends JFrame {
                         checkIfIsNotEmpty(new JTextField[] {nameField});
                         checkIfIsNotEmpty(descriptionsTextArea);
                         Group.addGroup(nameField.getText(), descriptionsTextArea.getText());
+                        DataIO.writeGroups();
                     } else if (previous == State.PRODUCTS) {
                         checkIfIsNotEmpty(new JTextField[] {nameField, producerField, amountField, priceField});
                         checkIfIsNotEmpty(descriptionsTextArea);
                         Product.addProduct(Group.getGroups().get(groupComboBox.getSelectedIndex()).getGroupName(), nameField.getText(), descriptionsTextArea.getText(), producerField.getText(), Integer.parseInt(amountField.getText()), Double.parseDouble(priceField.getText()));
+                        DataIO.writeProducts();
                     }
                     if(previous == State.GROUPS) changePanel(getGroupsPanel());
                     else if (previous == State.PRODUCTS) changePanel(getProductsPanel(previousGroupIndex));
@@ -518,12 +600,13 @@ public class MainFrame extends JFrame {
             if(index != -1) {
                 String answer = JOptionPane.showInputDialog(this, "How much do you want to write " + "sth" + " off?", "", JOptionPane.QUESTION_MESSAGE);
                 if(answer!= null) {
-                    if(!isInteger(answer)) showMessage("You should enter a number!", "Invalid input!");
+                    if(isNotInteger(answer)) showMessage("You should enter a number!", "Invalid input!");
                     else if(Integer.parseInt(answer) <= 0)  showMessage("You should enter a number that is larger than 0!", "Invalid input!");
                     else {
                         try {
                             Product.getProducts().get(index).writeOffFromStock(Product.getProducts().get(index).getProductName(), (Integer.parseInt(answer)));
                             fillProductTable(Group.getGroups().get(previousGroupIndex).getGroupName());
+                            DataIO.writeProducts();
                         }catch (RuntimeException ex) {
                             showMessage(ex.getMessage(), "Invalid input!");
                         }
@@ -537,12 +620,16 @@ public class MainFrame extends JFrame {
         });
     }
 
+    /**
+     * The method throws RuntimeException if textFields contains text field that is empty
+     * @param textFields the array ot text field that will be checked
+     */
     private void checkIfIsNotEmpty(JTextField[] textFields) {
         for(JTextField textField: textFields){
             if (textField.getText().isEmpty()) {
                 throw new RuntimeException("Fields '" + textField.getName() + "' is  empty!\nYou should fill it out");
             } else if (textField.getName().equals("Amount Field")) {
-                if(!isInteger(textField.getText()))
+                if(isNotInteger(textField.getText()))
                     throw new RuntimeException("The value '" + textField.getText()+ "' is invalid!");
             } else if (textField.getName().equals("Price Field")) {
                 if(!isDouble(textField.getText())) throw new RuntimeException("The value '" + textField.getText()+ "' is invalid!");
@@ -550,16 +637,29 @@ public class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * The method throws RuntimeException if textArea  is empty
+     * @param textArea - text area that will be checked
+     */
     private void checkIfIsNotEmpty(JTextArea textArea) {
         if (textArea.getText().isEmpty()) {
             throw new RuntimeException("Fields '" + textArea.getName() + "' is  empty!\nYou should fill it out");
         }
     }
 
+    /**
+     * The method show message dialog window
+     * @param text - text of message dialog window
+     * @param title - title of message dialog window
+     */
     private void showMessage(String text, String title) {
         JOptionPane.showMessageDialog(this, text, title, JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * The method returns JFileChooser instance with added filter for txt files
+     * @return JFileChooser instance with added filter for txt files
+     */
     private JFileChooser getFileChooser() {
         JFileChooser fileChooser = new JFileChooser(".");
         FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "txt", "text");
@@ -567,6 +667,9 @@ public class MainFrame extends JFrame {
         return fileChooser;
     }
 
+    /**
+     * The method inits all labels
+     */
     private void initLabels() {
         labels = new HashMap<>();
         labels.put("Name", new JLabel("Name:", SwingConstants.CENTER));
@@ -579,16 +682,30 @@ public class MainFrame extends JFrame {
         labels.values().forEach(l -> l.setFont(PLAIN_FONT_16));
     }
 
+    /**
+     * The method inits frame itself
+     */
     private void initFrame() {
-        setTitle("Some Frame");
+        setTitle("Stock");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, WIDTH, HEIGHT);
         setMaximumSize(new Dimension((int) (1.1*WIDTH), (int) (1.1*HEIGHT)));
         setMinimumSize(new Dimension((int) (0.9*WIDTH), HEIGHT));
     }
 
-    public static void add(JPanel panel, Component component, GridBagConstraints gbc, int x, int y, int width, int height, double wx, double wy, int insert) {
-        gbc.insets = new Insets(insert, insert, insert, insert);
+    /**
+     * The method helps add components to panels with GridBagLayout
+     * @param panel - panel where component will be added
+     * @param component - component that will be added
+     * @param x - specifies the cell at the top of the component's display area, where the topmost cell has x=0
+     * @param y - specifies the cell at the top of the component's display area, where the topmost cell has y=0.
+     * @param width - specifies the number of cells in a row for the component's display area.
+     * @param height - specifies the number of cells in a column for the component's display area.
+     * @param wx - specifies how to distribute extra horizontal space.
+     * @param wy - specifies how to distribute extra vertical space.
+     */
+    private void add(JPanel panel, Component component, int x, int y, int width, int height, double wx, double wy) {
+        gbc.insets = new Insets(INSERTS, INSERTS, INSERTS, INSERTS);
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = x;
@@ -597,10 +714,13 @@ public class MainFrame extends JFrame {
         gbc.gridheight = height;
         gbc.weightx = wx;
         gbc.weighty = wy;
-
         panel.add(component, gbc);
     }
 
+    /**
+     * The panel remove all components from frame and add panel
+     * @param panel - panel that will be added on empty frame
+     */
     private void changePanel(JPanel panel) {
         getContentPane().removeAll();
         getContentPane().add(panel);
@@ -608,25 +728,19 @@ public class MainFrame extends JFrame {
         this.repaint();
     }
 
-    public static void add(JPanel panel,GridBagLayout gb, Component component, GridBagConstraints gbc, int x, int y, int width, int height, double wx, double wy, int insert) {
-        gbc.insets = new Insets(insert, insert, insert, insert);
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = x;
-        gbc.gridy = y;
-        gbc.gridwidth = width;
-        gbc.gridheight = height;
-        gbc.weightx = wx;
-        gbc.weighty = wy;
-        gb.setConstraints(component, gbc);
-        panel.add(component, gbc);
-    }
-
+    /**
+     * The method sets new state and saves previous
+     * @param newCurrentState - state that will be set
+     */
     private void changeState(State newCurrentState) {
         previous = current;
         current = newCurrentState;
     }
 
+    /**
+     * Returns the index of the first selected row, -1 and show message dialog window if no row is selected.
+     * @return the index of the first selected row
+     */
     private int getSelectedRow() {
         int index = -1;
         JTable table = null;
@@ -640,19 +754,34 @@ public class MainFrame extends JFrame {
         return index;
     }
 
+    /**
+     * Returns true if user confirm special dialog window
+     * @param text - text that will be displayed on dialog window
+     * @return true if user confirm special dialog window
+     */
     private boolean isConfirmation(String text) {
         return JOptionPane.showConfirmDialog(this, text, "Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
 
-    private boolean isInteger(String answer) {
+    /**
+     * Returns true if answer is integer
+     * @param answer - text that will be checked
+     * @return true if answer is integer
+     */
+    private boolean isNotInteger(String answer) {
         try{
             Integer.parseInt(answer);
-            return true;
-        }catch (NumberFormatException e){
             return false;
+        }catch (NumberFormatException e){
+            return true;
         }
     }
 
+    /**
+     * Returns true if answer is double
+     * @param answer - text that will be checked
+     * @return true if answer is double
+     */
     private boolean isDouble(String answer) {
         try{
             Double.parseDouble(answer);
@@ -662,8 +791,10 @@ public class MainFrame extends JFrame {
         }
     }
 
-
-
+    /**
+     * The method make textField accepts only numbers
+     * @param textField - text field that will be accepted ony numbers
+     */
     private void acceptOnlyInteger(JTextField textField) {
         textField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
@@ -675,6 +806,10 @@ public class MainFrame extends JFrame {
         });
     }
 
+    /**
+     * The method make textField accepts only numbers and .
+     * @param textField - text field that will be accepted ony numbers and .
+     */
     private void acceptOnlyDouble(JTextField textField) {
         textField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(KeyEvent e) {

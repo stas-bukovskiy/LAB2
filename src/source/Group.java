@@ -30,24 +30,21 @@ public class Group {
             groups.add(new Group(groupName,groupDescription));
     }
     public static void editGroup(int index, String newGroupName, String newGroupDescription){
-        boolean unique = true;
         for(Group group: getGroups()){
-            if(group.getGroupName().equals(newGroupName)){
-                unique = false;
+            if(group.getGroupName().equals(newGroupName) && group != groups.get(index)){
                 throw new RuntimeException("Try to change group name for non unique");
             }
         }
-        if(unique){
-            products = Product.getProducts();
-            String oldName = groups.get(index).getGroupName();
-            for (Product product : products) {
-                if (product.getGroupNameInProduct().equals(oldName)) {
-                    product.setGroupNameInProduct(newGroupName);
-                }
+        products = Product.getProducts();
+        String oldName = groups.get(index).getGroupName();
+        for (Product product : products) {
+            if (product.getGroupNameInProduct().equals(oldName)) {
+                product.setGroupNameInProduct(newGroupName);
             }
-            Product.setProducts(products);
-            groups.get(index).setGroupName(newGroupName);
         }
+        Product.setProducts(products);
+        groups.get(index).setGroupName(newGroupName);
+
         groups.get(index).setGroupDescription(newGroupDescription);
     }
     public static void deleteGroup(String groupName){
